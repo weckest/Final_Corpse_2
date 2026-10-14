@@ -73,4 +73,4 @@ Plugins/**/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-Final_Corpse_2.uproject
+*.uproject
