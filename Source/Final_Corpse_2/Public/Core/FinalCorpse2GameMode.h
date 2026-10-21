@@ -12,5 +12,7 @@
 UCLASS()
 class FINAL_CORPSE_2_API AFinalCorpse2GameMode : public AGameModeBase
 {
+	AFinalCorpse2GameMode();
+	
 	GENERATED_BODY()
 };

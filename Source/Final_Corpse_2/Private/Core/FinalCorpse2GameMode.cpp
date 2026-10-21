@@ -2,3 +2,9 @@
 
 
 #include "Final_Corpse_2/Public/Core/FinalCorpse2GameMode.h"
+#include "Final_Corpse_2/Public/Character/BaseCharacter.h"
+
+AFinalCorpse2GameMode::AFinalCorpse2GameMode()
+{
+	DefaultPawnClass = ABaseCharacter::StaticClass();
+}

@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "FinalCorpse2PlayerController.generated.h"
 
+class UInputMappingContext;
 /**
  * 
  */
@@ -13,4 +14,11 @@ UCLASS()
 class FINAL_CORPSE_2_API AFinalCorpse2PlayerController : public APlayerController
 {
 	GENERATED_BODY()
+	
+	protected:
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TArray<UInputMappingContext*> DefaultMappingContexts;
+	
+	virtual void SetupInputComponent() override;
+	
 };
