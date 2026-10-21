@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Abilities/Ability.h"
 #include "Character/BaseCharacter.h"
 #include "PlayerCharacter.generated.h"
 
@@ -57,9 +58,28 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Input Actions")
 	TObjectPtr<UInputAction> SpecialAbilityAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities|Primary", meta = (UseComponentPicker, AllowedClasses = "/Script/Engine.ActorComponent", MustImplement = "/Script/Final_Corpse_2.Ability"))
+	FComponentReference PrimaryAbilityReference;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities|Primary")
+	bool bIsPrimaryAbilityHoldable;
+	
+	TScriptInterface<IAbility> ActivePrimaryAbility;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities|Secondary", meta = (UseComponentPicker, AllowedClasses = "/Script/Engine.ActorComponent", MustImplement = "/Script/Final_Corpse_2.Ability"))
+	FComponentReference SecondaryAbilityReference;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities|Secondary")
+	bool bIsSecondaryAbilityHoldable;
+	
+	TScriptInterface<IAbility> ActiveSecondaryAbility;
 
 	void Look(const FInputActionValue& Value);
 	void DoJump();
 	void StopJump();
 	void Move(const FInputActionValue& Value);
+	
+	void PrimaryAbility(const FInputActionValue& Value);
+	void SecondaryAbility(const FInputActionValue& Value);
 };

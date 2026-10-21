@@ -38,6 +38,11 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &APlayerCharacter::DoJump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Canceled, this, &APlayerCharacter::StopJump);
+		
+		//Abilities
+		EnhancedInputComponent->BindAction(PrimaryAbilityAction, bIsPrimaryAbilityHoldable ? ETriggerEvent::Triggered : ETriggerEvent::Started, this, &APlayerCharacter::PrimaryAbility);
+		
+		EnhancedInputComponent->BindAction(SecondaryAbilityAction, bIsSecondaryAbilityHoldable ? ETriggerEvent::Triggered : ETriggerEvent::Started, this, &APlayerCharacter::SecondaryAbility);
 	}
 }
 
@@ -73,10 +78,34 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 	AddMovementInput(GetActorRightVector(), MovementVector.Y);
 }
 
+void APlayerCharacter::PrimaryAbility(const FInputActionValue& Value)
+{	
+	if (ActivePrimaryAbility)
+	{
+		
+		IAbility::Execute_Ability(ActivePrimaryAbility.GetObject(), this);
+	}
+}
+
+void APlayerCharacter::SecondaryAbility(const FInputActionValue& Value)
+{
+	if (ActiveSecondaryAbility)
+	{
+		IAbility::Execute_Ability(ActiveSecondaryAbility.GetObject(), this);
+	}
+}
+
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	UActorComponent* ResolvedComp = PrimaryAbilityReference.GetComponent(this);
+	
+	if (ResolvedComp && ResolvedComp->Implements<UAbility>())
+	{
+		ActivePrimaryAbility = ResolvedComp;
+	}
 	
 }
 
