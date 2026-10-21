@@ -6,6 +6,11 @@
 #include "BaseCharacter.h"
 #include "PlayerCharacter.generated.h"
 
+struct FInputActionValue;
+class UInputAction;
+class USpringArmComponent;
+class UCameraComponent;
+
 UCLASS()
 class FINAL_CORPSE_2_API APlayerCharacter : public ABaseCharacter
 {
@@ -23,6 +28,29 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	USpringArmComponent* SpringArmComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+	TObjectPtr<USpringArmComponent> CameraBoom;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+	TObjectPtr<UCameraComponent> Camera;
+	
+	UPROPERTY(EditAnywhere, Category = "Input Actions")
+	TObjectPtr<UInputAction> LookAction;
+	
+	UPROPERTY(EditAnywhere, Category = "Input Actions")
+	TObjectPtr<UInputAction> JumpAction;
+	
+	UPROPERTY(EditAnywhere, Category = "Input Actions")
+	TObjectPtr<UInputAction> MoveAction;
+
+	void Look(const FInputActionValue& Value);
+	void DoJump();
+	void StopJump();
+	void Move(const FInputActionValue& Value);
 };

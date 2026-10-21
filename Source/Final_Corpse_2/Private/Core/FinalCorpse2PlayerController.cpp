@@ -1,4 +1,24 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Final_Corpse_2/Public/Core/FinalCorpse2PlayerController.h"
+#include "Core/FinalCorpse2PlayerController.h"
+
+#include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
+#include "Engine/LocalPlayer.h"
+
+void AFinalCorpse2PlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+	
+	if (IsLocalController())
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+		{
+			for (UInputMappingContext* CurrentContext : DefaultMappingContexts)
+			{
+				Subsystem->AddMappingContext(CurrentContext, 0);
+			}
+		}
+	}
+}
