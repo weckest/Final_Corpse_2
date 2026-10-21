@@ -23,8 +23,6 @@ public:
 	void Reload();
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	int MaxAmmo = 5;
