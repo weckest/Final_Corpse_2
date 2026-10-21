@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseEnemy.h"
+#include "Enemies/BaseEnemy.h"
 #include "MidTierEnem.generated.h"
 
 UCLASS()

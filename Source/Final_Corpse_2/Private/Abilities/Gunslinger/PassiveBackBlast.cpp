@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Final_Corpse_2/Public/Abilities/Gunslinger/PassiveBackBlast.h"
+#include "Abilities/Gunslinger/PassiveBackBlast.h"
 
 
 // Sets default values for this component's properties
@@ -33,4 +33,3 @@ void UPassiveBackBlast::TickComponent(float DeltaTime, ELevelTick TickType,
 
 	// ...
 }
-

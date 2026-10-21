@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Final_Corpse_2/Public/Enemies/BaseEnemy.h"
-#include "./Enemies/BaseEnemy.h"
-#include "./Enemies/UEnemyStatsComponent.h"
+#include "Enemies/BaseEnemy.h"
+#include "Enemies/UEnemyStatsComponent.h"
 
 
 

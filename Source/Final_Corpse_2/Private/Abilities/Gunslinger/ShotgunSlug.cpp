@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Final_Corpse_2/Public/Abilities/Gunslinger/ShotgunSlug.h"
+#include "Abilities/Gunslinger/ShotgunSlug.h"
 
 
 // Sets default values for this component's properties
@@ -32,4 +32,3 @@ void UShotgunSlug::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 	// ...
 }
-

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Final_Corpse_2/Public/Abilities/Ability.h"
+#include "Abilities/Ability.h"
 #include "Gun.generated.h"
 
 
