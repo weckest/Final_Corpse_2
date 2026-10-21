@@ -48,6 +48,15 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Input Actions")
 	TObjectPtr<UInputAction> MoveAction;
+	
+	UPROPERTY(EditAnywhere, Category = "Input Actions")
+	TObjectPtr<UInputAction> PrimaryAbilityAction;
+	
+	UPROPERTY(EditAnywhere, Category = "Input Actions")
+	TObjectPtr<UInputAction> SecondaryAbilityAction;
+	
+	UPROPERTY(EditAnywhere, Category = "Input Actions")
+	TObjectPtr<UInputAction> SpecialAbilityAction;
 
 	void Look(const FInputActionValue& Value);
 	void DoJump();
