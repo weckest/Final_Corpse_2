@@ -36,8 +36,8 @@ void ULifestealEffect::Lifesteal(const FGameplayEventData& GamePlayEventData)
 	{
 		if (UPlayerStats* PlayerStats = Player->GetComponentByClass<UPlayerStats>())
 		{
-			float& Health = PlayerStats->GetStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Health")));
-			float& LifeSteal = PlayerStats->GetStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.LifeSteal")));
+			float& Health = PlayerStats->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Health")));
+			float& LifeSteal = PlayerStats->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.LifeSteal")));
 			
 			Health += GamePlayEventData.Magnitude * LifeSteal;
 			//Update the UI?????

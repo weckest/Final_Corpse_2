@@ -17,25 +17,36 @@ UPlayerStats::UPlayerStats()
 	
 	for (auto Stat : BaseStats)
 	{
-		CurrentStats.Add(Stat.Key, Stat.Value);
+		// CurrentStats.Add(Stat.Key, Stat.Value);
+		MaxStats.Add(Stat.Key, Stat.Value);
 	}
 	// ...
 }
 
-float& UPlayerStats::GetStatValue(FGameplayTag StatTag)
+float& UPlayerStats::GetBaseStatValue(FGameplayTag StatTag)
+{
+	return BaseStats[StatTag];
+}
+
+float& UPlayerStats::GetCurrentStatValue(FGameplayTag StatTag)
 {
 	return CurrentStats[StatTag];
+}
+
+float& UPlayerStats::GetMaxStatValue(FGameplayTag StatTag)
+{
+	return MaxStats[StatTag];
 }
 
 void UPlayerStats::UpdateCurrentStats(UInventoryComponent* InventoryComponent)
 {
 	auto Items = InventoryComponent->GetItems();
 	
-	for (auto Stat : CurrentStats)
+	for (auto Stat : MaxStats)
 	{
 		if (Stat.Value != BaseStats[Stat.Key])
 		{
-			CurrentStats[Stat.Key] = BaseStats[Stat.Key];
+			MaxStats[Stat.Key] = BaseStats[Stat.Key];
 		}
 	}
 	
@@ -44,7 +55,7 @@ void UPlayerStats::UpdateCurrentStats(UInventoryComponent* InventoryComponent)
 		if (Item.Value <= 0) continue;
 		for (auto Modifier : Item.Key->StatModifiers)
 		{
-			float* CurrentValue = CurrentStats.Find(Modifier.StatTag);
+			float* MaxValue = MaxStats.Find(Modifier.StatTag);
 			float Value = 0.0f;
 			switch  (Modifier.CalculateOperation)
 			{
@@ -61,10 +72,10 @@ void UPlayerStats::UpdateCurrentStats(UInventoryComponent* InventoryComponent)
 			switch (Modifier.EditOperation)
 			{
 				case EStatModifierOperation::Add:
-					*CurrentValue += Value;
+					*MaxValue += Value;
 					break;
 				case EStatModifierOperation::Multiply:
-					*CurrentValue *= 1.0f + Value;
+					*MaxValue *= 1.0f + Value;
 					break;
 			}
 		}

@@ -26,8 +26,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	TMap<FGameplayTag, float> CurrentStats{};
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
+	TMap<FGameplayTag, float> MaxStats{};
+	
 	UFUNCTION(BlueprintCallable, Category = "Stats")
-	float& GetStatValue(FGameplayTag StatTag);
+	float& GetBaseStatValue(FGameplayTag StatTag);
+	
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+	float& GetCurrentStatValue(FGameplayTag StatTag);
+	
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+	float& GetMaxStatValue(FGameplayTag StatTag);
+	
+	
 	
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	void UpdateCurrentStats(UInventoryComponent* InventoryComponent);

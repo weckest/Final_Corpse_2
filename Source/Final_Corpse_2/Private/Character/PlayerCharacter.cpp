@@ -83,17 +83,11 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 	
 	if (!Tag.IsValid()) return;
 	
-	float* SpeedModifier = PlayerStats->CurrentStats.Find(Tag);
+	float* SpeedModifier = PlayerStats->MaxStats.Find(Tag);
 	
 	if (!SpeedModifier) return;
 	
 	FVector2D MovementVector =  Value.Get<FVector2d>() * *SpeedModifier * 600.0f;
-	
-	if (GEngine)
-	{
-		FString DebugMessage = FString::Printf(TEXT("Speed: %f"), MovementVector.Length());
-		GEngine->AddOnScreenDebugMessage(-1, 3.00f, FColor::Green, DebugMessage);
-	}
 	
 	AddMovementInput(GetActorForwardVector(), MovementVector.X);
 	AddMovementInput(GetActorRightVector(), MovementVector.Y);
