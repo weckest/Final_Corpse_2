@@ -6,6 +6,7 @@
 #include "ItemEffect.h"
 #include "LifestealEffect.generated.h"
 
+struct FGameplayEventData;
 /**
  * 
  */
@@ -18,4 +19,8 @@ public:
 	void OnAdded(AActor* Owner, int32 Count) override;
 	void OnCountChanged(int32 NewCount) override;
 	void OnRemoved(AActor* Owner) override;
+	
+protected:
+	UFUNCTION()
+	void Lifesteal(const FGameplayEventData& GamePlayEventData);
 };

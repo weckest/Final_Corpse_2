@@ -19,4 +19,10 @@ struct FINAL_CORPSE_2_API FGameplayEventData
 	
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<AActor> Actor;
+	
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<AActor> Target;
+	
+	UPROPERTY(BlueprintReadWrite)
+	float Magnitude;
 };

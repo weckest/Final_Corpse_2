@@ -15,7 +15,7 @@ class USpringArmComponent;
 class UCameraComponent;
 
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameplayEvent, const FGameplayEventData&)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameplayEvent, const FGameplayEventData&, GameplayEventData);
 UCLASS()
 class FINAL_CORPSE_2_API APlayerCharacter : public ABaseCharacter
 {
@@ -24,6 +24,9 @@ class FINAL_CORPSE_2_API APlayerCharacter : public ABaseCharacter
 public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
+	
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnGameplayEvent GamePlayEvent;
 
 protected:
 	// Called when the game starts or when spawned

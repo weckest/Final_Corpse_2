@@ -27,7 +27,7 @@ public:
 	TMap<FGameplayTag, float> CurrentStats{};
 	
 	UFUNCTION(BlueprintCallable, Category = "Stats")
-	float GetStatValue(FGameplayTag StatTag) const;
+	float& GetStatValue(FGameplayTag StatTag);
 	
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	void UpdateCurrentStats(UInventoryComponent* InventoryComponent);

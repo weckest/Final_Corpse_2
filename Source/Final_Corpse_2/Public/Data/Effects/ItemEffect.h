@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Abilities/PlayerStats.h"
 #include "UObject/Object.h"
 #include "ItemEffect.generated.h"
 
@@ -16,10 +17,14 @@ class FINAL_CORPSE_2_API UItemEffect : public UObject
 	GENERATED_BODY()
 	
 public:
-	virtual void OnAdded(AActor* Owner, int32 Count) {}
+	
+	virtual void OnAdded(AActor* Player, int32 Count) {}
 	
 	virtual void OnCountChanged(int32 NewCount) {}
 	
-	virtual void OnRemoved(AActor* Owner) {}
+	virtual void OnRemoved(AActor* Player) {}
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor")
+	TObjectPtr<UPlayerStats> Owner;
 	
 };

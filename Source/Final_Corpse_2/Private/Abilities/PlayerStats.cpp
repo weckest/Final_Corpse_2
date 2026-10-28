@@ -5,6 +5,7 @@
 
 #include "Components/InventoryComponent.h"
 #include "Data/ItemDataAsset.h"
+#include "Data/Effects/ItemEffect.h"
 
 
 // Sets default values for this component's properties
@@ -21,7 +22,7 @@ UPlayerStats::UPlayerStats()
 	// ...
 }
 
-float UPlayerStats::GetStatValue(FGameplayTag StatTag) const
+float& UPlayerStats::GetStatValue(FGameplayTag StatTag)
 {
 	return CurrentStats[StatTag];
 }
@@ -67,9 +68,18 @@ void UPlayerStats::UpdateCurrentStats(UInventoryComponent* InventoryComponent)
 					break;
 			}
 		}
+		
+		for (auto Effect: Item.Key->Effects)
+		{
+			if (UItemEffect* ItemEffect = Cast<UItemEffect>(Effect))
+			{
+				if (!ItemEffect->Owner)
+				{
+					ItemEffect->Owner = this;
+				}
+			}
+		}
 	}
-	
-	
 }
 
 
