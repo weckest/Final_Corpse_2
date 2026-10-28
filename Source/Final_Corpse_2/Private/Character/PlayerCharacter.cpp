@@ -4,8 +4,12 @@
 #include "Character/PlayerCharacter.h"
 
 #include "EnhancedInputComponent.h"
+#include "Abilities/PlayerStats.h"
 #include "Camera/CameraComponent.h"
+#include "Engine/Engine.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Math/UnitConversion.h"
 
 
 // Sets default values
@@ -71,8 +75,25 @@ void APlayerCharacter::StopJump()
 void APlayerCharacter::Move(const FInputActionValue& Value)
 {
 	if (!GetController()) return;
+	UPlayerStats* PlayerStats = this->GetComponentByClass<UPlayerStats>();
 	
-	FVector2D MovementVector = Value.Get<FVector2d>();
+	if (!PlayerStats) return;
+	
+	FGameplayTag Tag = FGameplayTag::RequestGameplayTag(FName("Stats.Speed"), false);
+	
+	if (!Tag.IsValid()) return;
+	
+	float* SpeedModifier = PlayerStats->CurrentStats.Find(Tag);
+	
+	if (!SpeedModifier) return;
+	
+	FVector2D MovementVector =  Value.Get<FVector2d>() * *SpeedModifier * 600.0f;
+	
+	if (GEngine)
+	{
+		FString DebugMessage = FString::Printf(TEXT("Speed: %f"), MovementVector.Length());
+		GEngine->AddOnScreenDebugMessage(-1, 3.00f, FColor::Green, DebugMessage);
+	}
 	
 	AddMovementInput(GetActorForwardVector(), MovementVector.X);
 	AddMovementInput(GetActorRightVector(), MovementVector.Y);

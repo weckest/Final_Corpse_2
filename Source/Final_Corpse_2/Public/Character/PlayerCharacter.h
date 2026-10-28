@@ -7,6 +7,7 @@
 #include "Character/BaseCharacter.h"
 #include "PlayerCharacter.generated.h"
 
+class UPlayerStats;
 struct FInputActionValue;
 class UInputAction;
 class USpringArmComponent;
@@ -74,6 +75,9 @@ public:
 	bool bIsSecondaryAbilityHoldable;
 	
 	TScriptInterface<IAbility> ActiveSecondaryAbility;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Stats")
+	TObjectPtr<UPlayerStats> Stats;
 
 	void Look(const FInputActionValue& Value);
 	void DoJump();

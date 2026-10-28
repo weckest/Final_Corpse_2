@@ -14,7 +14,7 @@ public class Final_Corpse_2 : ModuleRules
 		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
 		PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "GameplayTags"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 		

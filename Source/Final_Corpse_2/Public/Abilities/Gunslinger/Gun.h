@@ -31,6 +31,9 @@ protected:
 	int Ammo = 5;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
+	float Damage = 10.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	float CooldownTime = 1.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")

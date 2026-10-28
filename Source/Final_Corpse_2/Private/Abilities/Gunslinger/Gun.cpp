@@ -4,6 +4,7 @@
 #include "Abilities/Gunslinger/Gun.h"
 
 #include "DrawDebugHelpers.h"
+#include "Abilities/PlayerStats.h"
 #include "Engine/Engine.h"
 
 
@@ -30,7 +31,7 @@ void UGun::Shoot(AActor* AbilityUser)
 	} else if (Ammo <= 0)
 	{
 		Reload();
-	} else
+	} else if (UPlayerStats* PlayerStats = AbilityUser->FindComponentByClass<UPlayerStats>())
 	{
 		this->Ammo--;
 		CurrentCooldownTime = CooldownTime;
@@ -58,10 +59,6 @@ void UGun::Shoot(AActor* AbilityUser)
 		
 		for (int i = 0; i < Bullets; i++)
 		{
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, TEXT("Spread"));
-			}
 			bool bHit = AbilityUser->GetWorld()->LineTraceSingleByChannel(
 				HitResult,
 				StartLocation,
@@ -82,13 +79,9 @@ void UGun::Shoot(AActor* AbilityUser)
 				0,
 				1.5f
 			);
-	
-			/*if (!bHit) return;
-	
-			AActor* HitActor = HitResult.GetActor();
-	
-			if (!HitActor) return;*/
 		}
+		
+		
 	}
 }
 
