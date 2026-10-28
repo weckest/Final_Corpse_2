@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Abilities/Ability.h"
 #include "Character/BaseCharacter.h"
+#include "Data/GameplayEventData.h"
 #include "PlayerCharacter.generated.h"
 
 class UPlayerStats;
@@ -13,6 +14,8 @@ class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
 
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameplayEvent, const FGameplayEventData&)
 UCLASS()
 class FINAL_CORPSE_2_API APlayerCharacter : public ABaseCharacter
 {
