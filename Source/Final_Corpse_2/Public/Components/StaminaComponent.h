@@ -33,7 +33,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	
-	virtual bool HandleUseStamina(const FGameplayEventData& GameplayEventData);
+	UFUNCTION()
+	virtual void HandleUseStamina(const FGameplayEventData& GameplayEventData);
 	
 	UPROPERTY(BlueprintCallable, Category = "Stamina")
 	FOnStaminaUpdated OnStaminaUpdated;
