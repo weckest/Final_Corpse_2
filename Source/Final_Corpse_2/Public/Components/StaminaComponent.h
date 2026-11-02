@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "StaminaComponent.generated.h"
 
+struct FGameplayEventData;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStaminaUpdated, const FText&, ErrorType, float, CurrentStamina);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -22,25 +23,18 @@ protected:
 	virtual void BeginPlay() override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
-	float MaxStamina = 200.0f;
+	float MajorStaminaCost = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
-	float CurrentStamina;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
-	float StaminaRegenRate = 25.0f; //every second
-
+	float MinorStaminaCost = 50.0f;
 
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	
-	virtual void HandleUseStamina(float AmountToUse);
+	virtual bool HandleUseStamina(const FGameplayEventData& GameplayEventData);
 	
 	UPROPERTY(BlueprintCallable, Category = "Stamina")
 	FOnStaminaUpdated OnStaminaUpdated;
-	
-	
-	
 };

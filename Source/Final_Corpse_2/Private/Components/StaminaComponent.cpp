@@ -3,6 +3,10 @@
 
 #include "Components/StaminaComponent.h"
 
+#include "Abilities/PlayerStats.h"
+#include "Character/PlayerCharacter.h"
+#include "Data/GameplayEventData.h"
+
 
 // Sets default values for this component's properties
 UStaminaComponent::UStaminaComponent()
@@ -32,19 +36,70 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	CurrentStamina = FMath::Clamp(CurrentStamina + (StaminaRegenRate * DeltaTime), 0, MaxStamina); 
-	//need to adjust stamina regen rate and/or make it accessible to be updated with items
-
-	// ...
+	if (const APlayerCharacter* Player = Cast<APlayerCharacter>(GetOwner()))
+	{
+		if (UPlayerStats* PlayerStats = Player->GetComponentByClass<UPlayerStats>())
+		{
+			float& Stamina = PlayerStats->GetCurrentStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Stamina")));
+			const float& MaxStamina = PlayerStats->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Stamina")));
+			const float& StaminaRegenRate = PlayerStats->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.StaminaRegenRate")));
+			
+			//need to adjust stamina regen rate and/or make it accessible to be updated with items
+			Stamina = FMath::Clamp(Stamina + (StaminaRegenRate * DeltaTime), 0, MaxStamina); 
+		}
+	}
 }
 
-void UStaminaComponent::HandleUseStamina(float AmountToUse)
+// EVENTS THAT CALL THIS METHOD SHOULD BE THE ONES HANDLING SOUND AND UI!!!!
+bool UStaminaComponent::HandleUseStamina(const FGameplayEventData& GameplayEventData)
 {
-	if (CurrentStamina < AmountToUse)
+	if (GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag("Event.Stamina.DoubleJump")||
+		GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag("Event.Stamina.GroundDash") ||
+		GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag("Event.Stamina.AirDash") ||
+		GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag("Event.Stamina.WallJump") ||
+		GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag("Event.Stamina.FastFall")) return false;
+	
+	if (const APlayerCharacter* Player = Cast<APlayerCharacter>(GetOwner()))
 	{
-		OnStaminaUpdated.Broadcast(FText::FromString(TEXT("Not Enough Stamina")), CurrentStamina);
-		return;
+		if (UPlayerStats* PlayerStats = Player->GetComponentByClass<UPlayerStats>())
+		{
+			float& Stamina = PlayerStats->GetCurrentStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Stamina")));
+			const float& MaxStamina = PlayerStats->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Stamina")));
+			
+			//Sort by stamina level
+			if (GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag("Event.Stamina.DoubleJump")||
+			GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag("Event.Stamina.GroundDash") ||
+			GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag("Event.Stamina.AirDash")) {
+				if (Stamina < MajorStaminaCost)
+				{
+					OnStaminaUpdated.Broadcast(FText::FromString(TEXT("Not Enough Stamina")), Stamina);
+					return false;
+				} 
+				Stamina = FMath::Clamp(Stamina - MajorStaminaCost, 0, MaxStamina);
+				return true;
+
+			} 
+			
+			if (Stamina < MinorStaminaCost)
+			{
+				OnStaminaUpdated.Broadcast(FText::FromString(TEXT("Not Enough Stamina")), Stamina);
+				return false;
+			}
+
+			Stamina = FMath::Clamp(Stamina - MinorStaminaCost, 0, MaxStamina);
+			return true;
+
+
+		}
 	}
 	
-	CurrentStamina = FMath::Clamp(CurrentStamina - AmountToUse, 0, MaxStamina);
+	//catch
+	return false;
+	// if (CurrentStamina < 100)
+	// {
+	// 	OnStaminaUpdated.Broadcast(FText::FromString(TEXT("Not Enough Stamina")), CurrentStamina);
+	// 	return;
+	// }
+	//
+	// CurrentStamina = FMath::Clamp(CurrentStamina - 100, 0, MaxStamina);
 }
