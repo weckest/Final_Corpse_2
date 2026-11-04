@@ -202,8 +202,8 @@ void APlayerCharacter::AirDash(const FInputActionValue& Value)
 		//
 		
 		FVector Launch = GetVelocity(); //CHANGE THESE HARDCODES
-		Launch.X = Launch.X * AirDashVelocity;
-		Launch.Y = Launch.Y * AirDashVelocity;
+		Launch.X = Launch.X + AirDashAdditionalVelocity;
+		Launch.Y = Launch.Y + AirDashAdditionalVelocity;
 		Launch.Z = 0.0f;
 		
 		LaunchCharacter(Launch, false, false);
