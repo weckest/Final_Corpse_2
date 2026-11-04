@@ -54,7 +54,7 @@ void UGun::Shoot(AActor* AbilityUser)
 
 		AbilityUser->GetActorEyesViewPoint(StartLocation, ViewRotation);
 
-		FVector ForwardVector = ViewRotation.Vector();
+		FVector ForwardVector = ViewRotation.Vector() + FVector{0.0f, 0.0f, 0.25f};
 		FVector RightVector = ViewRotation.RotateVector(FVector::RightVector);
 
 		FVector EndLocation = StartLocation + (ForwardVector * AbilityRange);
@@ -90,23 +90,48 @@ void UGun::Shoot(AActor* AbilityUser)
 
 			FColor LineColor = bHit ? FColor::Green : FColor::Red;
 
-			// DrawDebugLine(
-			// 	AbilityUser->GetWorld(),
-			// 	StartLocation,
-			// 	BulletEnd,
-			// 	LineColor,
-			// 	false,
-			// 	5.0f,
-			// 	0,
-			// 	1.5f
-			// );
+			DrawDebugLine(
+				AbilityUser->GetWorld(),
+				StartLocation,
+				BulletEnd,
+				LineColor,
+				false,
+				5.0f,
+				0,
+				1.5f
+			);
 			
-			if (!bHit) return;
+			if (!bHit) continue;
+			
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, TEXT("Something HIT"));
+			}
 			
 			AActor* HitActor = HitResult.GetActor();
+			
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, FString::Printf(TEXT("Something HIT %s"), *HitActor->GetName()));
+			}
+			
 			if (ABaseEnemy* Enemy = Cast<ABaseEnemy>(HitActor))
 			{
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, TEXT("ENEMY HIT"));
+				}
 				UEnemyStatsComponent* EnemyStats = Enemy->GetComponentByClass<UEnemyStatsComponent>();
+				float DealtDamage = Damage * AbilityUser->GetComponentByClass<UPlayerStats>()->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Damage")));
+				EnemyStats->CurrentHealth -= DealtDamage;
+				
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, FString::Printf(TEXT("Damage Dealt: %f"), DealtDamage));
+				}
+				
+				APlayerCharacter* Player = Cast<APlayerCharacter>(AbilityUser);
+				Player->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Damaged")), Player, HitActor, DealtDamage});
 			}
 		}
 		
