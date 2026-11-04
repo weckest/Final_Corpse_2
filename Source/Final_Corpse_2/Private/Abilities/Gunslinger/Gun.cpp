@@ -7,6 +7,7 @@
 #include "Abilities/PlayerStats.h"
 #include "Character/PlayerCharacter.h"
 #include "Enemies/BaseEnemy.h"
+#include "Enemies/EnemyStatsComponent.h"
 #include "Engine/Engine.h"
 
 
@@ -38,11 +39,6 @@ void UGun::Shoot(AActor* AbilityUser)
 		this->Ammo--;
 		CurrentCooldownTime = CooldownTime;
 		
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, TEXT("Shooting"));
-		}
-		
 		if (APlayerCharacter* Player = Cast<APlayerCharacter>(AbilityUser))
 		{
 			Player->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Ability.Primary")), Player, nullptr, 0.0f});
@@ -53,7 +49,7 @@ void UGun::Shoot(AActor* AbilityUser)
 
 		AbilityUser->GetActorEyesViewPoint(StartLocation, ViewRotation);
 
-		FVector ForwardVector = ViewRotation.Vector();
+		FVector ForwardVector = ViewRotation.Vector() + FVector{0.0f, 0.0f, 0.25f};
 		FVector RightVector = ViewRotation.RotateVector(FVector::RightVector);
 
 		FVector EndLocation = StartLocation + (ForwardVector * AbilityRange);
@@ -89,23 +85,28 @@ void UGun::Shoot(AActor* AbilityUser)
 
 			FColor LineColor = bHit ? FColor::Green : FColor::Red;
 
-			// DrawDebugLine(
-			// 	AbilityUser->GetWorld(),
-			// 	StartLocation,
-			// 	BulletEnd,
-			// 	LineColor,
-			// 	false,
-			// 	5.0f,
-			// 	0,
-			// 	1.5f
-			// );
+			DrawDebugLine(
+				AbilityUser->GetWorld(),
+				StartLocation,
+				BulletEnd,
+				LineColor,
+				false,
+				5.0f,
+				0,
+				1.5f
+			);
 			
-			if (!bHit) return;
+			if (!bHit) continue;
 			
 			AActor* HitActor = HitResult.GetActor();
+			
 			if (ABaseEnemy* Enemy = Cast<ABaseEnemy>(HitActor))
 			{
-				// Enemy->GetComponentByClass<>();
+				UEnemyStatsComponent* EnemyStats = Enemy->GetComponentByClass<UEnemyStatsComponent>();
+				float DealtDamage = Damage * AbilityUser->GetComponentByClass<UPlayerStats>()->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Damage")));
+				
+				APlayerCharacter* Player = Cast<APlayerCharacter>(AbilityUser);
+				Player->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Damaged")), Player, HitActor, DealtDamage});
 			}
 		}
 		
