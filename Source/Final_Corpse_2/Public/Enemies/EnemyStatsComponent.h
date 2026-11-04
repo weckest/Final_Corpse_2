@@ -12,8 +12,7 @@ class FINAL_CORPSE_2_API UEnemyStatsComponent : public UActorComponent
 
 public:
 	UEnemyStatsComponent();
-
-protected:
+	
 	// Base stats configured per enemy type
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnemyStats")
 	float BaseMaxHealth = 100.0f;
