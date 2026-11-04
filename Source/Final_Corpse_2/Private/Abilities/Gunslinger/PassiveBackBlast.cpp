@@ -50,7 +50,11 @@ void UPassiveBackBlast::BackBlast(const FGameplayEventData& EventData)
 	{
 		if (Player->GetMovementComponent()->IsFalling())
 		{
-			FVector Forward = Player->GetActorForwardVector();
+			FVector StartLocation;
+			FRotator ViewRotation;
+
+			Player->GetActorEyesViewPoint(StartLocation, ViewRotation);
+			FVector Forward = ViewRotation.Vector();
 			if (GEngine)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Blasting Bros Back Before: %f"), Forward.Dot(Player->GetActorRightVector())));
