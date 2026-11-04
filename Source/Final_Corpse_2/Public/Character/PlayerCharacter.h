@@ -79,15 +79,13 @@ public:
 	float DashLockoutTime = 0.3f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
-	float GroundDashVelocity = 30.0f;
+	float GroundDashVelocity = 2750.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
-	float AirDashMinimumVelocity = 30.0f;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
-	float AirDashAdditionalVelocity = 30.0f;
+	float AirDashVelocity = 750.0f;
 	
 	FTimerHandle DashLockoutTimerHandle;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities|Primary")
 	bool bIsPrimaryAbilityHoldable;
 	

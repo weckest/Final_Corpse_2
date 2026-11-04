@@ -7,6 +7,7 @@
 #include "Character/PlayerCharacter.h"
 #include "Data/GameplayEventData.h"
 #include "Data/Effects/LifestealEffect.h"
+#include "Engine/Engine.h"
 
 
 // Sets default values for this component's properties
@@ -39,7 +40,7 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                       FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
+
 	if (const APlayerCharacter* Player = Cast<APlayerCharacter>(GetOwner()))
 	{
 		if (UPlayerStats* PlayerStats = Player->GetComponentByClass<UPlayerStats>())
@@ -47,6 +48,12 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 			float& Stamina = PlayerStats->GetCurrentStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Stamina")));
 			const float& MaxStamina = PlayerStats->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Stamina")));
 			const float& StaminaRegenRate = PlayerStats->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.StaminaRegenRate")));
+			
+			
+			// if (GEngine)
+			// {
+			// 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::SanitizeFloat(Stamina));
+			// }
 			
 			//need to adjust stamina regen rate and/or make it accessible to be updated with items
 			Stamina = FMath::Clamp(Stamina + (StaminaRegenRate * DeltaTime), 0, MaxStamina); 
@@ -57,8 +64,10 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 // EVENTS THAT CALL THIS METHOD SHOULD BE THE ONES HANDLING SOUND AND UI!!!!
 void UStaminaComponent::HandleUseStamina(const FGameplayEventData& GameplayEventData)
 {
-	if (GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag("Event.Stamina.MajorStaminaUsed") || 
+	if (GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag("Event.Stamina.MajorStaminaUsed") && 
 		GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag("Event.Stamina.MinorStaminaUsed")) return;
+	
+	
 	
 	if (const APlayerCharacter* Player = Cast<APlayerCharacter>(GetOwner()))
 	{
@@ -74,8 +83,15 @@ void UStaminaComponent::HandleUseStamina(const FGameplayEventData& GameplayEvent
 			}
 
 			Stamina = FMath::Clamp(Stamina - MinorStaminaCost, 0, MaxStamina);
+			
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::Printf(TEXT("Used Stamina, Current: %.2f"), Stamina));
+			}
 		}
 	}
+	
+	
 
 	// if (CurrentStamina < 100)
 	// {

@@ -26,7 +26,7 @@ protected:
 	float MajorStaminaCost = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
-	float MinorStaminaCost = 50.0f;
+	float MinorStaminaCost = 50.0f;;
 
 public:
 	// Called every frame
