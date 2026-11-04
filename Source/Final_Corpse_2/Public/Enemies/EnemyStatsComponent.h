@@ -3,15 +3,15 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "UEnemyStatsComponent.generated.h"
+#include "EnemyStatsComponent.generated.h"
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class FINAL_CORPSE_2_API UUEnemyStatsComponent : public UActorComponent
+class FINAL_CORPSE_2_API UEnemyStatsComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
-	UUEnemyStatsComponent();
+	UEnemyStatsComponent();
 
 protected:
 	// Base stats configured per enemy type

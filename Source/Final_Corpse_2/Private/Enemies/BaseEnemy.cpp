@@ -2,7 +2,7 @@
 
 
 #include "Enemies/BaseEnemy.h"
-#include "Enemies/UEnemyStatsComponent.h"
+#include "Enemies/EnemyStatsComponent.h"
 
 
 
@@ -11,7 +11,7 @@ ABaseEnemy::ABaseEnemy()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	EnemyStats = CreateDefaultSubobject<UUEnemyStatsComponent>(
+	EnemyStats = CreateDefaultSubobject<UEnemyStatsComponent>(
 		TEXT("EnemyStats"));
 }
 

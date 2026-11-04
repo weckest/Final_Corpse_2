@@ -4,7 +4,7 @@
 #include "GameFramework/Character.h"
 #include "BaseEnemy.generated.h"
 
-class UUEnemyStatsComponent;
+class UEnemyStatsComponent;
 
 UCLASS()
 class FINAL_CORPSE_2_API ABaseEnemy : public ACharacter
@@ -16,7 +16,7 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UUEnemyStatsComponent> EnemyStats;
+	TObjectPtr<UEnemyStatsComponent> EnemyStats;
 
 	virtual void BeginPlay() override;
 
