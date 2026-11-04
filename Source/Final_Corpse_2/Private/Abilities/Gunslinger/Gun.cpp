@@ -103,27 +103,12 @@ void UGun::Shoot(AActor* AbilityUser)
 			
 			if (!bHit) continue;
 			
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, TEXT("Something HIT"));
-			}
-			
 			AActor* HitActor = HitResult.GetActor();
-			
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, FString::Printf(TEXT("Something HIT %s"), *HitActor->GetName()));
-			}
 			
 			if (ABaseEnemy* Enemy = Cast<ABaseEnemy>(HitActor))
 			{
-				if (GEngine)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, TEXT("ENEMY HIT"));
-				}
 				UEnemyStatsComponent* EnemyStats = Enemy->GetComponentByClass<UEnemyStatsComponent>();
 				float DealtDamage = Damage * AbilityUser->GetComponentByClass<UPlayerStats>()->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Damage")));
-				EnemyStats->CurrentHealth -= DealtDamage;
 				
 				if (GEngine)
 				{
