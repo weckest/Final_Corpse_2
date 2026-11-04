@@ -7,6 +7,7 @@
 #include "Abilities/PlayerStats.h"
 #include "Character/PlayerCharacter.h"
 #include "Enemies/BaseEnemy.h"
+#include "Enemies/EnemyStatsComponent.h"
 #include "Engine/Engine.h"
 
 
@@ -105,7 +106,7 @@ void UGun::Shoot(AActor* AbilityUser)
 			AActor* HitActor = HitResult.GetActor();
 			if (ABaseEnemy* Enemy = Cast<ABaseEnemy>(HitActor))
 			{
-				// Enemy->GetComponentByClass<>();
+				UEnemyStatsComponent* EnemyStats = Enemy->GetComponentByClass<UEnemyStatsComponent>();
 			}
 		}
 		
