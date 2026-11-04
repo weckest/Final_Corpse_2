@@ -7,6 +7,8 @@
 #include "PassiveAirstrike.generated.h"
 
 
+struct FGameplayEventData;
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class FINAL_CORPSE_2_API UPassiveAirstrike : public UActorComponent
 {
@@ -21,10 +23,16 @@ protected:
 	virtual void BeginPlay() override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
-	float DamageMultiplier = 1.5f;
+	float DamageMultiplier = 1.2f;
 
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+	
+	UFUNCTION()
+	void AirStrikeAbilityAdd(const FGameplayEventData& GamePlayEventData);
+	
+	UFUNCTION()
+	void AirStrikeAbilityRemove(const FGameplayEventData& GameplayEventData);
 };

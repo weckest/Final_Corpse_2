@@ -7,6 +7,8 @@
 #include "PassiveBackBlast.generated.h"
 
 
+struct FGameplayEventData;
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class FINAL_CORPSE_2_API UPassiveBackBlast : public UActorComponent
 {
@@ -24,4 +26,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ability")
+	float Force = 750.0f;
+	
+	UFUNCTION()
+	void BackBlast(const FGameplayEventData& EventData);
 };

@@ -3,6 +3,11 @@
 
 #include "Abilities/Gunslinger/PassiveAirstrike.h"
 
+#include "Abilities/PlayerStats.h"
+#include "Character/PlayerCharacter.h"
+#include "Engine/Engine.h"
+#include "GameFramework/PawnMovementComponent.h"
+
 
 // Sets default values for this component's properties
 UPassiveAirstrike::UPassiveAirstrike()
@@ -19,6 +24,12 @@ UPassiveAirstrike::UPassiveAirstrike()
 void UPassiveAirstrike::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	APlayerCharacter* Player = Cast<APlayerCharacter>(GetOwner());
+	
+	Player->GamePlayEvent.AddDynamic(this, &UPassiveAirstrike::AirStrikeAbilityAdd);
+	Player->GamePlayEvent.AddDynamic(this, &UPassiveAirstrike::AirStrikeAbilityRemove);
+	
 
 	// ...
 	
@@ -37,4 +48,43 @@ void UPassiveAirstrike::TickComponent(float DeltaTime, ELevelTick TickType,
 	// {
 	// 	if (Chara)
 	// }
+}
+
+void UPassiveAirstrike::AirStrikeAbilityAdd(const FGameplayEventData& GamePlayEventData)
+{
+	if (GamePlayEventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Player.Jumped"))) return;
+	
+	if (APlayerCharacter* Player = Cast<APlayerCharacter>(GamePlayEventData.Actor))
+	{
+		if (!Player->GetMovementComponent()->IsFalling())
+		{
+			if (UPlayerStats* Stats = Player->GetComponentByClass<UPlayerStats>())
+			{
+				Stats->UpdateMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Damage")), DamageMultiplier, EEditType::Multiply);
+			
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("Increasing Damage"));
+				}
+			}
+		}
+	}
+}
+
+void UPassiveAirstrike::AirStrikeAbilityRemove(const FGameplayEventData& GameplayEventData)
+{
+	if (GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Player.Landed"))) return;
+	
+	if (APlayerCharacter* Player = Cast<APlayerCharacter>(GameplayEventData.Actor))
+	{
+		if (UPlayerStats* Stats = Player->GetComponentByClass<UPlayerStats>())
+		{
+			Stats->UpdateMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Damage")), DamageMultiplier, EEditType::Divide);
+			
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("Decreasing Damage"));
+			}
+		}
+	}
 }

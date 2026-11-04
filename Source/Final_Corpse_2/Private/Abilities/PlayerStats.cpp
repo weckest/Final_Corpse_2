@@ -3,9 +3,12 @@
 
 #include "Abilities/PlayerStats.h"
 
+#include <string>
+
 #include "Components/InventoryComponent.h"
 #include "Data/ItemDataAsset.h"
 #include "Data/Effects/ItemEffect.h"
+#include "Engine/Engine.h"
 
 
 // Sets default values for this component's properties
@@ -20,6 +23,8 @@ UPlayerStats::UPlayerStats()
 		// CurrentStats.Add(Stat.Key, Stat.Value);
 		MaxStats.Add(Stat.Key, Stat.Value);
 	}
+	
+	OnPlayerStatsUpdated.AddDynamic(this, &UPlayerStats::StatChanged);
 	// ...
 }
 
@@ -36,6 +41,52 @@ float& UPlayerStats::GetCurrentStatValue(FGameplayTag StatTag)
 float& UPlayerStats::GetMaxStatValue(FGameplayTag StatTag)
 {
 	return MaxStats[StatTag];
+}
+
+void UPlayerStats::UpdateMaxStatValue(FGameplayTag StatTag, float Amount, EEditType Type)
+{
+	float& MaxStat = GetMaxStatValue(StatTag);
+	
+	switch (Type)
+	{
+		case EEditType::Add:
+			MaxStat += Amount;
+			break;
+		case EEditType::Multiply:
+			MaxStat *= Amount;
+			break;
+		case EEditType::Divide:
+			MaxStat /= Amount;
+			break;
+		case EEditType::Subtract:
+			MaxStat -= Amount;
+			break;
+	}
+	
+	OnPlayerStatsUpdated.Broadcast(StatTag);
+}
+
+void UPlayerStats::UpdateCurrentStatValue(FGameplayTag StatTag, float Amount, EEditType Type)
+{
+	float& CurrentStat = GetCurrentStatValue(StatTag);
+	
+	switch (Type)
+	{
+	case EEditType::Add:
+		CurrentStat += Amount;
+		break;
+	case EEditType::Multiply:
+		CurrentStat *= Amount;
+		break;
+	case EEditType::Divide:
+		CurrentStat /= Amount;
+		break;
+	case EEditType::Subtract:
+		CurrentStat -= Amount;
+		break;
+	}
+	
+	OnPlayerStatsUpdated.Broadcast(StatTag);
 }
 
 void UPlayerStats::UpdateCurrentStats(UInventoryComponent* InventoryComponent)
@@ -90,6 +141,15 @@ void UPlayerStats::UpdateCurrentStats(UInventoryComponent* InventoryComponent)
 				}
 			}
 		}
+	}
+}
+
+void UPlayerStats::StatChanged(FGameplayTag StatTag)
+{
+	if (GEngine)
+	{
+		FString DebugMessage = FString::Printf(TEXT("Stat: %s changed to %f"), *StatTag.ToString(), GetMaxStatValue(StatTag));
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, DebugMessage);
 	}
 }
 
