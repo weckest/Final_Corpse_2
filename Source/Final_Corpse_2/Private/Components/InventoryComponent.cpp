@@ -3,6 +3,9 @@
 
 #include "Components/InventoryComponent.h"
 
+#include "Data/ItemDataAsset.h"
+#include "Data/Effects/ItemEffect.h"
+
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -20,6 +23,13 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	// ...
+	for (auto Item : Items)
+	{
+		for (TSubclassOf<UItemEffect>& Effect : Item.Key.Get()->Effects)
+		{
+			Effect.GetDefaultObject()->OnAdded(GetOwner(), Item.Value);
+		}
+	}
 	
 }
 

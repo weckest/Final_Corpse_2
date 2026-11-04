@@ -12,9 +12,17 @@
 void ULifestealEffect::OnAdded(AActor* Player, int32 Count)
 {
 	Super::OnAdded(Player, Count);
-	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(Player))
+	if (!bIsAdded)
 	{
-		PlayerCharacter->GamePlayEvent.AddDynamic(this, &ULifestealEffect::Lifesteal);
+		if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(Player))
+		{
+			PlayerCharacter->GamePlayEvent.AddDynamic(this, &ULifestealEffect::Lifesteal);
+			bIsAdded = true;
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Added Listener for gameplay event")));
+			}
+		}
 	}
 }
 
@@ -31,13 +39,9 @@ void ULifestealEffect::OnRemoved(AActor* Player)
 void ULifestealEffect::Lifesteal(const FGameplayEventData& GamePlayEventData)
 {
 	if (GamePlayEventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Damaged"))) return;
+
 	
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Lifesteal")));
-	}
-	
-	if (APlayerCharacter* Player = Cast<APlayerCharacter>(Owner))
+	if (APlayerCharacter* Player = Cast<APlayerCharacter>(GamePlayEventData.Actor))
 	{
 		if (UPlayerStats* PlayerStats = Player->GetComponentByClass<UPlayerStats>())
 		{

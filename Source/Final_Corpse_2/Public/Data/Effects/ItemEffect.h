@@ -11,7 +11,7 @@ class AActor;
 /**
  * 
  */
-UCLASS(Abstract, Blueprintable, EditInlineNew)
+UCLASS(Blueprintable, EditInlineNew)
 class FINAL_CORPSE_2_API UItemEffect : public UObject
 {
 	GENERATED_BODY()
@@ -26,5 +26,8 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor")
 	TObjectPtr<UPlayerStats> Owner;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+	bool bIsAdded = false;
 	
 };
