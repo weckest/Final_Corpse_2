@@ -6,6 +6,7 @@
 #include "Abilities/PlayerStats.h"
 #include "Character/PlayerCharacter.h"
 #include "Components/InventoryComponent.h"
+#include "Engine/Engine.h"
 #include "GameFramework/Pawn.h"
 
 void UMainHUD::NativeConstruct()
@@ -26,6 +27,8 @@ void UMainHUD::NativeConstruct()
 			if (APlayerCharacter* Character = Cast<APlayerCharacter>(Player))
 			{
 				Character->GamePlayEvent.AddDynamic(this, &UMainHUD::UpdateStaminaBar);
+				Character->GamePlayEvent.AddDynamic(this, &UMainHUD::UpdatePrimaryAbility);
+				Character->GamePlayEvent.AddDynamic(this, &UMainHUD::UpdateSecondaryAbility);
 			}
 		}
 	}
@@ -36,4 +39,24 @@ void UMainHUD::UpdateStaminaBar(const FGameplayEventData& GameplayEventData)
 	if (GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Stamina.Changed"))) return;
 	
 	//update the stamina bar TO-DO
+}
+
+void UMainHUD::UpdatePrimaryAbility(const FGameplayEventData& GameplayEventData)
+{
+	if (GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Player.Ability.Primary.Ready"))) return;
+	
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("Primary Ready"));
+	}
+}
+
+void UMainHUD::UpdateSecondaryAbility(const FGameplayEventData& GameplayEventData)
+{
+	if (GameplayEventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Player.Ability.Secondary.Ready"))) return;
+	
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("Secondary Ready"));
+	}
 }

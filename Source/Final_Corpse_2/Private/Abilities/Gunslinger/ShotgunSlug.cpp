@@ -7,9 +7,9 @@
 #include "Abilities/PlayerStats.h"
 #include "Character/PlayerCharacter.h"
 #include "Enemies/BaseEnemy.h"
+#include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
-
 
 // Sets default values for this component's properties
 UShotgunSlug::UShotgunSlug()
@@ -19,6 +19,13 @@ UShotgunSlug::UShotgunSlug()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
+}
+
+void UShotgunSlug::Ability(AActor* AbilityUser)
+{
+	if (!AbilityUser) return;
+	
+	Shoot(AbilityUser);
 }
 
 
@@ -32,13 +39,7 @@ void UShotgunSlug::BeginPlay()
 }
 
 
-// Called every frame
-void UShotgunSlug::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	CurrentCooldownTime = FMath::Clamp(CurrentCooldownTime -= DeltaTime, 0.0f, CooldownTime);
-	// ...
-}
+
 
 void UShotgunSlug::Shoot(AActor* AbilityUser)
 {
@@ -52,7 +53,7 @@ void UShotgunSlug::Shoot(AActor* AbilityUser)
 		
 		if (APlayerCharacter* Player = Cast<APlayerCharacter>(AbilityUser))
 		{
-			Player->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Ability.Primary")), Player, nullptr, 0.0f});
+			Player->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Ability.Secondary")), Player, nullptr, 0.0f});
 		}
 		
 		FVector StartLocation;
@@ -119,7 +120,21 @@ void UShotgunSlug::Shoot(AActor* AbilityUser)
 				Player->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Enemy.DamageRequest")), Player, HitActor, DealtDamage});
 			}
 		}
-		
-		
+	}
+}
+
+// Called every frame
+void UShotgunSlug::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	CurrentCooldownTime = FMath::Clamp(CurrentCooldownTime -= DeltaTime, 0.0f, CooldownTime);
+	
+	if (CurrentCooldownTime <= 0.0f && !bIsReady)
+	{
+		if (APlayerCharacter* Player = Cast<APlayerCharacter>(GetOwner()))
+		{
+			Player->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Ability.Secondary.Ready")), Player, nullptr, 0.0f});
+			bIsReady = true;
+		}
 	}
 }

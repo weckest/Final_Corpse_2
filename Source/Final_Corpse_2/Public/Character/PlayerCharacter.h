@@ -88,27 +88,28 @@ public:
 	float AirDashAdditionalVelocity = 30.0f;
 	
 	FTimerHandle DashLockoutTimerHandle;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities|Primary")
+	bool bIsPrimaryAbilityHoldable;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities|Primary", meta = (UseComponentPicker, AllowedClasses = "/Script/Engine.ActorComponent", MustImplement = "/Script/Final_Corpse_2.Ability"))
 	FComponentReference PrimaryAbilityReference;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities|Primary")
-	bool bIsPrimaryAbilityHoldable;
+	TObjectPtr<UAbility> ActivePrimaryAbility;
 	
-	TScriptInterface<IAbility> ActivePrimaryAbility;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities|Secondary")
+	bool bIsSecondaryAbilityHoldable;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities|Secondary", meta = (UseComponentPicker, AllowedClasses = "/Script/Engine.ActorComponent", MustImplement = "/Script/Final_Corpse_2.Ability"))
 	FComponentReference SecondaryAbilityReference;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities|Secondary")
-	bool bIsSecondaryAbilityHoldable;
-	
-	TScriptInterface<IAbility> ActiveSecondaryAbility;
+	TObjectPtr<UAbility> ActiveSecondaryAbility;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities|Passive", meta = (UseComponentPicker, AllowedClasses = "/Script/Engine.ActorComponent"))
 	TArray<FComponentReference> PassiveAbilityReference;
 	
-	TArray<TScriptInterface<IAbility>> ActivePassiveAbility;
+	TArray<TScriptInterface<UActorComponent>> ActivePassiveAbility;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Stats")
 	TObjectPtr<UPlayerStats> Stats;

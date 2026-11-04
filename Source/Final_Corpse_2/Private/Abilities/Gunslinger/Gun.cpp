@@ -10,14 +10,6 @@
 #include "Enemies/EnemyStatsComponent.h"
 #include "Engine/Engine.h"
 
-
-void UGun::Ability_Implementation(AActor* AbilityUser)
-{
-	if (!AbilityUser) return;
-	
-	Shoot(AbilityUser);
-}
-
 // Sets default values
 UGun::UGun()
 {
@@ -36,8 +28,10 @@ void UGun::Shoot(AActor* AbilityUser)
 		Reload();
 	} else if (UPlayerStats* PlayerStats = AbilityUser->FindComponentByClass<UPlayerStats>())
 	{
+		if (!bIsReady) return;
 		this->Ammo--;
 		CurrentCooldownTime = CooldownTime;
+		bIsReady = false;
 		
 		if (APlayerCharacter* Player = Cast<APlayerCharacter>(AbilityUser))
 		{
@@ -123,6 +117,13 @@ void UGun::Reload()
 	Ammo = MaxAmmo;
 }
 
+void UGun::Ability(AActor* AbilityUser)
+{
+	if (!AbilityUser) return;
+	
+	Shoot(AbilityUser);
+}
+
 // Called every frame
 void UGun::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -132,5 +133,14 @@ void UGun::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTi
 	if (Ammo <= 0)
 	{
 		Reload();
+	}
+	
+	if (CurrentCooldownTime <= 0.0f && !bIsReady)
+	{
+		if (APlayerCharacter* Player = Cast<APlayerCharacter>(GetOwner()))
+		{
+			Player->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Ability.Primary.Ready")), Player, nullptr, 0.0f});
+			bIsReady = true;
+		}
 	}
 }
