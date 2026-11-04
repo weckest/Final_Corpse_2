@@ -55,12 +55,19 @@ void ABaseEnemy::Tick(float DeltaTime)
 
 void ABaseEnemy::HandleGameplayEvent(const FGameplayEventData& EventData)
 {
-	static const FGameplayTag DamageTag = FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Damaged"));
+	static const FGameplayTag DamageTag = FGameplayTag::RequestGameplayTag(FName("Event.Enemy.DamageRequest"));
 	if (EventData.EventTag != DamageTag  || EventData.Target != this) return;
 	
 	if (bIsDead || !EnemyStats) return;
 	
-	EnemyStats->CurrentHealth -= EventData.Magnitude;
+	// brackets for future damage calculations
+	float damageDealt = (EventData.Magnitude);
+	
+	EnemyStats->CurrentHealth -= damageDealt;
+	
+	ListenedPlayer->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Damaged")), 
+		ListenedPlayer, this, damageDealt});
+	
 	CheckDeath();
 }
 
