@@ -106,7 +106,7 @@ void UGun::Shoot(AActor* AbilityUser)
 				float DealtDamage = Damage * AbilityUser->GetComponentByClass<UPlayerStats>()->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Damage")));
 				
 				APlayerCharacter* Player = Cast<APlayerCharacter>(AbilityUser);
-				Player->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Damaged")), Player, HitActor, DealtDamage});
+				Player->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Enemy.DamageRequest")), Player, HitActor, DealtDamage});
 			}
 		}
 		
