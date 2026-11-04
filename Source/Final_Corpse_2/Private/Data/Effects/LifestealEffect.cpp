@@ -32,6 +32,11 @@ void ULifestealEffect::Lifesteal(const FGameplayEventData& GamePlayEventData)
 {
 	if (GamePlayEventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Damaged"))) return;
 	
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Lifesteal")));
+	}
+	
 	if (APlayerCharacter* Player = Cast<APlayerCharacter>(Owner))
 	{
 		if (UPlayerStats* PlayerStats = Player->GetComponentByClass<UPlayerStats>())
@@ -40,6 +45,11 @@ void ULifestealEffect::Lifesteal(const FGameplayEventData& GamePlayEventData)
 			float& LifeSteal = PlayerStats->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.LifeSteal")));
 			
 			Health += GamePlayEventData.Magnitude * LifeSteal;
+			
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Health Gained: %f"), GamePlayEventData.Magnitude * LifeSteal));
+			}
 			//Update the UI?????
 		}
 	}
