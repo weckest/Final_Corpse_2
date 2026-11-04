@@ -28,6 +28,7 @@ void UGun::Shoot(AActor* AbilityUser)
 		Reload();
 	} else if (UPlayerStats* PlayerStats = AbilityUser->FindComponentByClass<UPlayerStats>())
 	{
+		if (!bIsReady) return;
 		this->Ammo--;
 		CurrentCooldownTime = CooldownTime;
 		bIsReady = false;

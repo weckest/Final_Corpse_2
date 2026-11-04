@@ -27,6 +27,8 @@ void UMainHUD::NativeConstruct()
 			if (APlayerCharacter* Character = Cast<APlayerCharacter>(Player))
 			{
 				Character->GamePlayEvent.AddDynamic(this, &UMainHUD::UpdateStaminaBar);
+				Character->GamePlayEvent.AddDynamic(this, &UMainHUD::UpdatePrimaryAbility);
+				Character->GamePlayEvent.AddDynamic(this, &UMainHUD::UpdateSecondaryAbility);
 			}
 		}
 	}
