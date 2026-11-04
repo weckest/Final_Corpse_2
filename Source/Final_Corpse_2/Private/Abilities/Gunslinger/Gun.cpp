@@ -144,3 +144,4 @@ void UGun::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTi
 		}
 	}
 }
+
