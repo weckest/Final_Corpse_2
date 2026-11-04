@@ -30,4 +30,10 @@ private:
 	
 	UFUNCTION()
 	void UpdateStaminaBar(const FGameplayEventData& GameplayEventData);
+	
+	UFUNCTION()
+	void UpdatePrimaryAbility(const FGameplayEventData& GameplayEventData);
+	
+	UFUNCTION()
+	void UpdateSecondaryAbility(const FGameplayEventData& GameplayEventData);
 };

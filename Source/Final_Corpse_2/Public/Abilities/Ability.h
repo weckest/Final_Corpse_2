@@ -3,28 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
 #include "UObject/Interface.h"
 #include "Ability.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE()
-class UAbility : public UInterface
+UCLASS()
+class UAbility : public UActorComponent
 {
 	GENERATED_BODY()
-};
-
-/**
- * 
- */
-class FINAL_CORPSE_2_API IAbility
-{
-	GENERATED_BODY()
-
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
-public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Abilities")
-	void Ability(AActor* AbilityUser);
 	
-	// C++ implementation fallback
-	virtual void Ability_Implementation(AActor* AbilityUser) = 0;
+public:
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	virtual void Ability(AActor* AbilityUser);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
+	bool bIsReady = true;
 };

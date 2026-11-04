@@ -3,18 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Abilities/Ability.h"
 #include "Components/ActorComponent.h"
 #include "ShotgunSlug.generated.h"
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class FINAL_CORPSE_2_API UShotgunSlug : public UActorComponent
+class FINAL_CORPSE_2_API UShotgunSlug : public UAbility
 {
 	GENERATED_BODY()
-
+	
+	
 public:
 	// Sets default values for this component's properties
 	UShotgunSlug();
+	
+	virtual void Ability(AActor* AbilityUser) override;
+	
 
 protected:
 	// Called when the game starts

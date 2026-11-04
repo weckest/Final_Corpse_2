@@ -3,5 +3,13 @@
 
 #include "Abilities/Ability.h"
 
+#include "Engine/Engine.h"
 
-// Add default functionality here for any IAbility functions that are not pure virtual.
+
+void UAbility::Ability(AActor* AbilityUser)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("HOW DID YOU GET HERE"));
+	}
+}

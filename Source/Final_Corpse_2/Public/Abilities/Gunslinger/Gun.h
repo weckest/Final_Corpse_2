@@ -9,10 +9,9 @@
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class FINAL_CORPSE_2_API UGun : public UActorComponent, public IAbility
+class FINAL_CORPSE_2_API UGun : public UAbility
 {
 private:
-	virtual void Ability_Implementation(AActor* AbilityUser) override;
 	
 	GENERATED_BODY()
 
@@ -21,6 +20,9 @@ public:
 	UGun();
 	void Shoot(AActor* AbilityUser);
 	void Reload();
+	
+	virtual void Ability(AActor* AbilityUser) override;
+	
 
 protected:
 	

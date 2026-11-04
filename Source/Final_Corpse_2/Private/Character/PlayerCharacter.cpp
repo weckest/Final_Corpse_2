@@ -103,8 +103,7 @@ void APlayerCharacter::PrimaryAbility(const FInputActionValue& Value)
 {	
 	if (ActivePrimaryAbility)
 	{
-		
-		IAbility::Execute_Ability(ActivePrimaryAbility.GetObject(), this);
+		ActivePrimaryAbility->Ability(this);
 	}
 }
 
@@ -112,7 +111,7 @@ void APlayerCharacter::SecondaryAbility(const FInputActionValue& Value)
 {
 	if (ActiveSecondaryAbility)
 	{
-		IAbility::Execute_Ability(ActiveSecondaryAbility.GetObject(), this);
+		ActiveSecondaryAbility->Ability(this);
 	}
 }
 
@@ -123,16 +122,17 @@ void APlayerCharacter::BeginPlay()
 	
 	UActorComponent* ResolvedPrimaryComp = PrimaryAbilityReference.GetComponent(this);
 	
-	if (ResolvedPrimaryComp && ResolvedPrimaryComp->Implements<UAbility>())
+	if (UAbility* Ability = Cast<UAbility>(ResolvedPrimaryComp))
 	{
-		ActivePrimaryAbility = ResolvedPrimaryComp;
+		ActivePrimaryAbility = Ability;
 	}
 	
 	UActorComponent* ResolvedSecondaryComp = SecondaryAbilityReference.GetComponent(this);
 	
-	if (ResolvedSecondaryComp && ResolvedSecondaryComp->Implements<UAbility>())
+	if (UAbility* Ability = Cast<UAbility>(ResolvedSecondaryComp))
 	{
-		ActiveSecondaryAbility = ResolvedSecondaryComp;
+		
+		ActiveSecondaryAbility = Ability;
 	}
 	
 	for (auto PassiveAbility : PassiveAbilityReference)
