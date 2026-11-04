@@ -42,7 +42,7 @@ public:
 	// method to randomize 3 items from the item pool and display them in the shop
 	// prices for each item should also be displayed
 	UFUNCTION(BlueprintCallable, Category = "Shop")
-	TArray<TObjectPtr<UItemDataAsset>> RandomizeItems();
+	TArray<UItemDataAsset*> RandomizeItems();
 	
 	// method to handle the purchase of an item by the player
 	UFUNCTION(BlueprintCallable, Category = "Shop")

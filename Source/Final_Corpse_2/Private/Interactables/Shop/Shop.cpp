@@ -27,9 +27,9 @@ void AShop::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-TArray<TObjectPtr<UItemDataAsset>> AShop::RandomizeItems()
+TArray<UItemDataAsset*> AShop::RandomizeItems()
 {
-	return TArray<TObjectPtr<UItemDataAsset>>();
+	return TArray<UItemDataAsset*>();
 }
 
 bool AShop::PurchaseItem(int32 ItemIndex)
