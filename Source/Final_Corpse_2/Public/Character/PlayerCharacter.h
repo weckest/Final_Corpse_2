@@ -66,6 +66,29 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input Actions")
 	TObjectPtr<UInputAction> SpecialAbilityAction;
 	
+	UPROPERTY(EditAnywhere, Category = "Input Actions")
+	TObjectPtr<UInputAction> GroundDashAction;
+	
+	UPROPERTY(EditAnywhere, Category = "Input Actions")
+	TObjectPtr<UInputAction> AirDashAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	bool bIsDashing = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	float DashLockoutTime = 0.3f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	float GroundDashVelocity = 30.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	float AirDashMinimumVelocity = 30.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	float AirDashAdditionalVelocity = 30.0f;
+	
+	FTimerHandle DashLockoutTimerHandle;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities|Primary", meta = (UseComponentPicker, AllowedClasses = "/Script/Engine.ActorComponent", MustImplement = "/Script/Final_Corpse_2.Ability"))
 	FComponentReference PrimaryAbilityReference;
 	
@@ -99,4 +122,7 @@ public:
 	
 	void PrimaryAbility(const FInputActionValue& Value);
 	void SecondaryAbility(const FInputActionValue& Value);
+	
+	void GroundDash(const FInputActionValue& Value);
+	void AirDash(const FInputActionValue& Value);
 };

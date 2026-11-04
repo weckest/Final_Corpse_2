@@ -4,8 +4,10 @@
 #include "Character/PlayerCharacter.h"
 
 #include "EnhancedInputComponent.h"
+#include "TimerManager.h"
 #include "Abilities/PlayerStats.h"
 #include "Camera/CameraComponent.h"
+#include "Components/StaminaComponent.h"
 #include "Engine/Engine.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -45,9 +47,14 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		
 		//Abilities
 		EnhancedInputComponent->BindAction(PrimaryAbilityAction, bIsPrimaryAbilityHoldable ? ETriggerEvent::Triggered : ETriggerEvent::Started, this, &APlayerCharacter::PrimaryAbility);
-		
 		EnhancedInputComponent->BindAction(SecondaryAbilityAction, bIsSecondaryAbilityHoldable ? ETriggerEvent::Triggered : ETriggerEvent::Started, this, &APlayerCharacter::SecondaryAbility);
+	
+		//Movement
+		EnhancedInputComponent->BindAction(GroundDashAction, ETriggerEvent::Triggered, this, &APlayerCharacter::GroundDash);
+		EnhancedInputComponent->BindAction(AirDashAction, ETriggerEvent::Triggered, this, &APlayerCharacter::AirDash);
 	}
+	
+	
 }
 
 void APlayerCharacter::Look(const FInputActionValue& Value)
@@ -115,6 +122,102 @@ void APlayerCharacter::SecondaryAbility(const FInputActionValue& Value)
 		IAbility::Execute_Ability(ActiveSecondaryAbility.GetObject(), this);
 	}
 }
+
+void APlayerCharacter::GroundDash(const FInputActionValue& Value)
+{
+	
+	
+	
+	//on ground and is not dashing
+	if (!GetCharacterMovement()->IsMovingOnGround() || bIsDashing) return;
+	
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, TEXT("Past First Check"));
+	}
+	
+	//stamina check
+	if (UPlayerStats* PlayerStats = this->GetComponentByClass<UPlayerStats>())
+	{
+		// float& Stamina = PlayerStats->GetCurrentStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Stamina")));
+		//
+		// if (GEngine)
+		// {
+		// 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::SanitizeFloat(Stamina));
+		// }
+		//
+		// if (Stamina < 100.0f)
+		// {
+		// 	//flag here
+		// 	return;
+		// }
+		//
+		// //subtract stamina
+		// GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Stamina.MajorStaminaUsed")), this, nullptr, 0.0f});
+		//
+		
+		FVector Launch = GetVelocity(); //CHANGE THESE HARDCODES
+		Launch.X = Launch.X * 100.0f;
+		Launch.Y = Launch.Y * 100.0f;
+		
+		LaunchCharacter(Launch, false, false);
+		
+		bIsDashing = true;
+
+		GetWorldTimerManager().SetTimer(DashLockoutTimerHandle, [this]()
+		{
+			bIsDashing = false;
+		}, DashLockoutTime, false);
+	}
+	
+}
+
+void APlayerCharacter::AirDash(const FInputActionValue& Value)
+{
+	//in air and is not dashing
+	if (GetCharacterMovement()->IsMovingOnGround() || bIsDashing) return;
+	
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, TEXT("Past First Check"));
+	}
+	
+	//stamina check
+	if (UPlayerStats* PlayerStats = this->GetComponentByClass<UPlayerStats>())
+	{
+		// float& Stamina = PlayerStats->GetCurrentStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Stamina")));
+		//
+		// if (GEngine)
+		// {
+		// 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::SanitizeFloat(Stamina));
+		// }
+		//
+		// if (Stamina < 100.0f)
+		// {
+		// 	//flag here
+		// 	return;
+		// }
+		//
+		// //subtract stamina
+		// GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Stamina.MajorStaminaUsed")), this, nullptr, 0.0f});
+		//
+		
+		FVector Launch = GetVelocity(); //CHANGE THESE HARDCODES
+		Launch.X = Launch.X * AirDashVelocity;
+		Launch.Y = Launch.Y * AirDashVelocity;
+		Launch.Z = 0.0f;
+		
+		LaunchCharacter(Launch, false, false);
+		
+		bIsDashing = true;
+
+		GetWorldTimerManager().SetTimer(DashLockoutTimerHandle, [this]()
+		{
+			bIsDashing = false;
+		}, DashLockoutTime, false);
+	}
+}
+
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
