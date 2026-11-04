@@ -11,10 +11,22 @@
 
 class UInventoryComponent;
 
+UENUM(BlueprintType)
+enum class EEditType : uint8
+{
+	Add,
+	Subtract,
+	Multiply,
+	Divide
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatsUpdated, FGameplayTag, StatTag);
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class FINAL_CORPSE_2_API UPlayerStats : public UActorComponent
 {
 	GENERATED_BODY()
+	
+	
 
 public:
 	// Sets default values for this component's properties
@@ -29,6 +41,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	TMap<FGameplayTag, float> MaxStats{};
 	
+	UPROPERTY(BlueprintAssignable, Category = "PlayerStats")
+	FOnPlayerStatsUpdated OnPlayerStatsUpdated;
+	
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	float& GetBaseStatValue(FGameplayTag StatTag);
 	
@@ -38,9 +53,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	float& GetMaxStatValue(FGameplayTag StatTag);
 	
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+	void UpdateMaxStatValue(FGameplayTag StatTag, float Amount, EEditType Type);
 	
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+	void UpdateCurrentStatValue(FGameplayTag StatTag, float Amount, EEditType Type);
 	
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	void UpdateCurrentStats(UInventoryComponent* InventoryComponent);
+	
+	UFUNCTION()
+	void StatChanged(FGameplayTag StatTag);
 	
 };

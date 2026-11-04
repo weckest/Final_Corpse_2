@@ -82,6 +82,11 @@ public:
 	
 	TScriptInterface<IAbility> ActiveSecondaryAbility;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities|Passive", meta = (UseComponentPicker, AllowedClasses = "/Script/Engine.ActorComponent"))
+	TArray<FComponentReference> PassiveAbilityReference;
+	
+	TArray<TScriptInterface<IAbility>> ActivePassiveAbility;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Stats")
 	TObjectPtr<UPlayerStats> Stats;
 
@@ -89,6 +94,8 @@ public:
 	void DoJump();
 	void StopJump();
 	void Move(const FInputActionValue& Value);
+	
+	virtual void Landed(const FHitResult& Hit) override;
 	
 	void PrimaryAbility(const FInputActionValue& Value);
 	void SecondaryAbility(const FInputActionValue& Value);

@@ -63,7 +63,7 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 void APlayerCharacter::DoJump()
 {
 	if (!CanJump()) return;
-	
+	GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Jumped")), this, nullptr, 0.0f});
 	Jump();
 }
 
@@ -93,6 +93,12 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 	AddMovementInput(GetActorRightVector(), MovementVector.Y);
 }
 
+void APlayerCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Landed")), this, nullptr, 0.0f});
+}
+
 void APlayerCharacter::PrimaryAbility(const FInputActionValue& Value)
 {	
 	if (ActivePrimaryAbility)
@@ -115,11 +121,28 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	UActorComponent* ResolvedComp = PrimaryAbilityReference.GetComponent(this);
+	UActorComponent* ResolvedPrimaryComp = PrimaryAbilityReference.GetComponent(this);
 	
-	if (ResolvedComp && ResolvedComp->Implements<UAbility>())
+	if (ResolvedPrimaryComp && ResolvedPrimaryComp->Implements<UAbility>())
 	{
-		ActivePrimaryAbility = ResolvedComp;
+		ActivePrimaryAbility = ResolvedPrimaryComp;
+	}
+	
+	UActorComponent* ResolvedSecondaryComp = SecondaryAbilityReference.GetComponent(this);
+	
+	if (ResolvedSecondaryComp && ResolvedSecondaryComp->Implements<UAbility>())
+	{
+		ActiveSecondaryAbility = ResolvedSecondaryComp;
+	}
+	
+	for (auto PassiveAbility : PassiveAbilityReference)
+	{
+		UActorComponent* PassiveComponent = PassiveAbility.GetComponent(this);
+		
+		if (PassiveComponent)
+		{
+			ActivePassiveAbility.Add(PassiveComponent);
+		}
 	}
 	
 }
