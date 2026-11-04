@@ -39,11 +39,6 @@ void UGun::Shoot(AActor* AbilityUser)
 		this->Ammo--;
 		CurrentCooldownTime = CooldownTime;
 		
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, TEXT("Shooting"));
-		}
-		
 		if (APlayerCharacter* Player = Cast<APlayerCharacter>(AbilityUser))
 		{
 			Player->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Ability.Primary")), Player, nullptr, 0.0f});
@@ -109,11 +104,6 @@ void UGun::Shoot(AActor* AbilityUser)
 			{
 				UEnemyStatsComponent* EnemyStats = Enemy->GetComponentByClass<UEnemyStatsComponent>();
 				float DealtDamage = Damage * AbilityUser->GetComponentByClass<UPlayerStats>()->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Damage")));
-				
-				if (GEngine)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, FString::Printf(TEXT("Damage Dealt: %f"), DealtDamage));
-				}
 				
 				APlayerCharacter* Player = Cast<APlayerCharacter>(AbilityUser);
 				Player->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Damaged")), Player, HitActor, DealtDamage});
