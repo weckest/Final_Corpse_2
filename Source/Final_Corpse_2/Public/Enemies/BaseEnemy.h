@@ -19,11 +19,14 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UEnemyStatsComponent> EnemyStats;
+	
 
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void Die();
 
 public:
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
 	virtual void Tick(float DeltaTime) override;
 	
 	UFUNCTION()
@@ -34,9 +37,6 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category= "Enemy")
 	bool isDead()const {return bIsDead;};
-	
-protected:
-	virtual void Die();
 
 	
 private:
