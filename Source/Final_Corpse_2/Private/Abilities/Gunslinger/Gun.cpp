@@ -35,7 +35,7 @@ void UGun::Shoot(AActor* AbilityUser)
 		
 		if (APlayerCharacter* Player = Cast<APlayerCharacter>(AbilityUser))
 		{
-			Player->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Ability.Primary")), Player, nullptr, 0.0f});
+			Player->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Ability.Primary.Used")), Player, nullptr, 0.0f});
 		}
 		
 		FVector StartLocation;
@@ -145,3 +145,4 @@ void UGun::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTi
 	}
 }
 
+ 
