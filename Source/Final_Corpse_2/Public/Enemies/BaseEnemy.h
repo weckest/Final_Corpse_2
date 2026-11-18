@@ -7,6 +7,7 @@
 
 class APlayerCharacter;
 class UEnemyStatsComponent;
+class UBehaviorTree;
 
 UCLASS()
 class FINAL_CORPSE_2_API ABaseEnemy : public ACharacter
@@ -29,6 +30,8 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 	
+	virtual void Attack(){};
+	
 	UFUNCTION()
 	void HandleGameplayEvent(const FGameplayEventData& EventData);
 	
@@ -37,11 +40,20 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category= "Enemy")
 	bool isDead()const {return bIsDead;};
+	
+	UFUNCTION(BlueprintPure, Category= "Enemy")
+	UEnemyStatsComponent* GetEnemyStats() const {return EnemyStats;};
+	
+	UBehaviorTree* GetBehaviorTree() const {return BehaviorTree;};
+	
 
 	
 private:
 	UPROPERTY()
 	TObjectPtr<APlayerCharacter> ListenedPlayer;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Ai")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
 	
 	bool bIsDead = false;
 };
