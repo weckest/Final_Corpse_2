@@ -31,6 +31,13 @@ APlayerCharacter::APlayerCharacter()
 	Camera->bUsePawnControlRotation = false;
 }
 
+void APlayerCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	bIsFastFalling = false;
+	GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Landed")), this, nullptr, 0.0f});
+}
+
 // Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -52,6 +59,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		//Movement
 		EnhancedInputComponent->BindAction(GroundDashAction, ETriggerEvent::Started, this, &APlayerCharacter::GroundDash);
 		EnhancedInputComponent->BindAction(AirDashAction, ETriggerEvent::Started, this, &APlayerCharacter::AirDash);
+		
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &APlayerCharacter::OnCrouchPressed);
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Canceled, this, &APlayerCharacter::OnCrouchReleased);
 	}
 	
 	
@@ -142,10 +152,53 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 	AddMovementInput(GetActorRightVector(), MovementVector.Y);
 }
 
-void APlayerCharacter::Landed(const FHitResult& Hit)
+void APlayerCharacter::OnCrouchPressed()
 {
-	Super::Landed(Hit);
-	GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Landed")), this, nullptr, 0.0f});
+	
+	UMovementComponent* MovementComp = GetMovementComponent();
+	const float CurrentTime = GetWorld()->GetTimeSeconds();
+	
+	if (MovementComp && GetMovementComponent()->IsFalling())
+	{
+		if (UPlayerStats* PlayerStats = this->GetComponentByClass<UPlayerStats>())
+		{
+			float& Stamina = PlayerStats->GetCurrentStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Stamina")));
+				
+			if (Stamina < 50.0f)
+			{
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::Printf(TEXT("Not Enough Stamina: %.2f"), Stamina));
+				}
+				return;
+			}
+		}
+			
+		if (!bIsFastFalling && (CurrentTime - LastCrouchPressTime) <= DoubleTapWindow)
+		{
+			TriggerFastFall();
+			LastCrouchPressTime = -1.0f;
+			return;
+		}
+	} else
+	{
+		Crouch();
+	}
+	
+	LastCrouchPressTime = CurrentTime;
+}
+
+void APlayerCharacter::OnCrouchReleased()
+{
+	UnCrouch();
+}
+
+void APlayerCharacter::TriggerFastFall()
+{
+	bIsFastFalling = true;
+	GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Stamina.MinorStaminaUsed")), this, nullptr, 0.0f});
+		
+	LaunchCharacter(FVector(0.0f, 0.0f, -FastFallSpeed), false, true);
 }
 
 void APlayerCharacter::PrimaryAbility(const FInputActionValue& Value)
