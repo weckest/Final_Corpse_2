@@ -18,7 +18,7 @@ struct FINAL_CORPSE_2_API FGameplayEventData
 	FGameplayTag EventTag;
 	
 	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<AActor> Actor;
+	TObjectPtr<UObject> Actor;
 	
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<AActor> Target;
