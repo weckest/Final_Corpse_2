@@ -26,6 +26,13 @@ ABaseEnemy::ABaseEnemy()
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 	GetMesh()->bEnableUpdateRateOptimizations = true;
 	GetMesh()->SetGenerateOverlapEvents(false);
+	
+	bUseControllerRotationYaw = false;
+	UCharacterMovementComponent* Move = GetCharacterMovement();
+	
+	Move->bOrientRotationToMovement = true;
+	Move->bUseControllerDesiredRotation = true;
+	Move->RotationRate = FRotator(0.f, 540.f, 0.f);
 }
 
 // Called when the game starts or when spawned
