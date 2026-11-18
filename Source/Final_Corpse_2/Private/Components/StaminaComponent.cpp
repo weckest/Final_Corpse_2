@@ -57,6 +57,11 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 			
 			//need to adjust stamina regen rate and/or make it accessible to be updated with items
 			Stamina = FMath::Clamp(Stamina + (StaminaRegenRate * DeltaTime), 0, MaxStamina); 
+			
+			if (MaxStamina > 0.0f)
+			{
+				OnStaminaUpdated.Broadcast(Stamina / MaxStamina);
+			}
 		}
 	}
 }
@@ -77,12 +82,18 @@ void UStaminaComponent::HandleUseStamina(const FGameplayEventData& GameplayEvent
 			const float& MaxStamina = PlayerStats->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Stamina")));
 			
 			//Sort by stamina level
-			if (GameplayEventData.EventTag == FGameplayTag::RequestGameplayTag("Event.Stamina.MajorStaminaUse"))
+			if (GameplayEventData.EventTag == FGameplayTag::RequestGameplayTag("Event.Stamina.MajorStaminaUsed"))
 			{
 				Stamina = FMath::Clamp(Stamina - MajorStaminaCost, 0, MaxStamina);
+			} else
+			{
+				Stamina = FMath::Clamp(Stamina - MinorStaminaCost, 0, MaxStamina);
 			}
-
-			Stamina = FMath::Clamp(Stamina - MinorStaminaCost, 0, MaxStamina);
+			
+			if (MaxStamina > 0.0f)
+			{
+				OnStaminaUpdated.Broadcast(Stamina / MaxStamina);
+			}
 			
 			if (GEngine)
 			{

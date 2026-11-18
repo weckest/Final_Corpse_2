@@ -7,7 +7,7 @@
 #include "StaminaComponent.generated.h"
 
 struct FGameplayEventData;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStaminaUpdated, const FText&, ErrorType, float, CurrentStamina);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaUpdated, float, StaminaPercent);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class FINAL_CORPSE_2_API UStaminaComponent : public UActorComponent
@@ -36,6 +36,6 @@ public:
 	UFUNCTION()
 	virtual void HandleUseStamina(const FGameplayEventData& GameplayEventData);
 	
-	UPROPERTY(BlueprintCallable, Category = "Stamina")
+	UPROPERTY(VisibleAnywhere, BlueprintAssignable, Category = "Stamina")
 	FOnStaminaUpdated OnStaminaUpdated;
 };
