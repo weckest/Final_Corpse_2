@@ -4,7 +4,10 @@
 #include "Enemies/BaseEnemy.h"
 
 #include "Character/PlayerCharacter.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Enemies/EnemyStatsComponent.h"
+#include "Enemies/AiControllers/BaseAiController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -15,6 +18,14 @@ ABaseEnemy::ABaseEnemy()
 
 	EnemyStats = CreateDefaultSubobject<UEnemyStatsComponent>(
 		TEXT("EnemyStats"));
+	
+	AIControllerClass = ABaseAiController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	
+	GetCharacterMovement()->DefaultLandMovementMode = MOVE_NavWalking;
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+	GetMesh()->bEnableUpdateRateOptimizations = true;
+	GetMesh()->SetGenerateOverlapEvents(false);
 }
 
 // Called when the game starts or when spawned
@@ -61,7 +72,7 @@ void ABaseEnemy::HandleGameplayEvent(const FGameplayEventData& EventData)
 	if (bIsDead || !EnemyStats) return;
 	
 	ListenedPlayer->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Hit")), 
-		this, ListenedPlayer, 0.0f});
+		EventData.Actor, this, 0.0f});
 	
 	// brackets for future damage calculations
 	float damageDealt = (EventData.Magnitude);

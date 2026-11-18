@@ -57,15 +57,16 @@ void UBurnEffect::Burn(const FGameplayEventData& GamePlayEventData)
 {
 	if (GamePlayEventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Hit"))) return;
 	
-	if (ABaseEnemy* Enemy = Cast<ABaseEnemy>(GamePlayEventData.Actor))
+	if (ABaseEnemy* Enemy = Cast<ABaseEnemy>(GamePlayEventData.Target))
 	{
 		if (UEnemyStatsComponent* EnemyStats = Enemy->GetComponentByClass<UEnemyStatsComponent>())
 		{
-			if (!EnemyStats->bIsBurning)
+			FTimerHandle& TimerHandle = BurnTimerHandle.FindOrAdd(Enemy);
+			FTimerHandle& IntervalTimerHandle = BurnIntervalTimerHandle.FindOrAdd(Enemy);
+			
+			if (APlayerCharacter* Player = Cast<APlayerCharacter>(GamePlayEventData.Actor))
 			{
-				FTimerHandle& TimerHandle = BurnTimerHandle.FindOrAdd(Enemy);
-				FTimerHandle& IntervalTimerHandle = BurnIntervalTimerHandle.FindOrAdd(Enemy);
-
+				//LIGHT THEM ON FIRE BABY!!!!
 				Enemy->GetWorldTimerManager().SetTimer(TimerHandle, [this, Enemy, EnemyStats, &IntervalTimerHandle]()
 				{
 					Enemy->GetWorldTimerManager().ClearTimer(IntervalTimerHandle);
@@ -76,10 +77,9 @@ void UBurnEffect::Burn(const FGameplayEventData& GamePlayEventData)
 						GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Burning %d"), EnemyStats->bIsBurning));
 					}
 				}, BurnLength * EffectCount, false);
-		
+	
 				Enemy->GetWorldTimerManager().SetTimer(IntervalTimerHandle, [this, EnemyStats, GamePlayEventData, Enemy]()
 				{
-					EnemyStats->bIsBurning = true;
 					if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GamePlayEventData.Target))
 					{
 						float Damage = BurnDamage * PlayerCharacter->GetComponentByClass<UPlayerStats>()->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Damage")));
@@ -87,12 +87,13 @@ void UBurnEffect::Burn(const FGameplayEventData& GamePlayEventData)
 						{
 							GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Burning %f"), Damage));
 						}
-						PlayerCharacter->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Enemy.DamageRequest")), PlayerCharacter, Enemy, Damage});
+						PlayerCharacter->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Enemy.DamageRequest")), this, Enemy, Damage});
 					}
 				}, BurnInterval, true);
-				
-				if (BurnEffect)
+			
+				if (BurnEffect && !EnemyStats->bIsBurning)
 				{
+					EnemyStats->bIsBurning = true;
 					if (UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
 						BurnEffect,
 						Enemy->GetRootComponent(),
@@ -159,8 +160,10 @@ void UBurnEffect::StopBurningVfx(ABaseEnemy* Enemy)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Fully Deleted")));
 			}
-			NiagaraComponent->Get()->DeactivateImmediate();
-			NiagaraComponent->Get()->DestroyComponent();
+			// Stop spawning new particles, but let the particles already in the
+			// system finish their normal lifetimes before the component is removed.
+			NiagaraComponent->Get()->SetAutoDestroy(true);
+			NiagaraComponent->Get()->Deactivate();
 		}
 		BurnNiagaraComponents.Remove(Enemy);
 	}
