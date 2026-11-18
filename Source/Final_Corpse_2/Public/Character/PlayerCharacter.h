@@ -124,4 +124,20 @@ public:
 	
 	void GroundDash(const FInputActionValue& Value);
 	void AirDash(const FInputActionValue& Value);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WallJump")
+	float WallCheckDistance = 65.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WallJump")
+	float WallJumpHorizontalForce = 750.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WallJump")
+	float WallJumpVerticalForce = 600.0f;
+	
+	UFUNCTION(BlueprintCallable, Category = "WallJump")
+	bool TryWallJump();
+	
+	bool FindWall(FHitResult& OutHit) const;
+	
+	
 };

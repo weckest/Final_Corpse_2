@@ -69,9 +69,51 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 void APlayerCharacter::DoJump()
 {
-	if (!CanJump()) return;
-	GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Jumped")), this, nullptr, 0.0f});
-	Jump();
+	
+	if (GetCharacterMovement()->IsFalling())
+	{
+		
+		//flag here
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::Printf(TEXT("Not Enough Stamina: %s"), TryWallJump() ? TEXT("true") : TEXT("false")));
+		}
+		
+		if (!TryWallJump())
+		{
+			if (JumpCurrentCount < JumpMaxCount)
+			{
+				if (UPlayerStats* PlayerStats = this->GetComponentByClass<UPlayerStats>())
+				{
+					float& Stamina = PlayerStats->GetCurrentStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Stamina")));
+				
+					if (Stamina < 100.0f)
+					{
+						//flag here
+						if (GEngine)
+						{
+							GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::Printf(TEXT("Not Enough Stamina: %.2f"), Stamina));
+						}
+					} else
+					{
+						GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Stamina.MajorStaminaUsed")), this, nullptr, 0.0f});
+					
+						Jump();
+					}
+				}
+			}
+			
+			
+			
+		}
+	} else
+	{
+		GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Jumped")), this, nullptr, 0.0f});
+		Jump();
+	}
+	
+	//if (!CanJump()) return;
+	
 }
 
 void APlayerCharacter::StopJump()
@@ -173,7 +215,6 @@ void APlayerCharacter::GroundDash(const FInputActionValue& Value)
 			bIsDashing = false;
 		}, DashLockoutTime, false);
 	}
-	
 }
 
 void APlayerCharacter::AirDash(const FInputActionValue& Value)
@@ -215,6 +256,79 @@ void APlayerCharacter::AirDash(const FInputActionValue& Value)
 			bIsDashing = false;
 		}, DashLockoutTime, false);
 	}
+}
+
+bool APlayerCharacter::TryWallJump()
+{
+	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
+	if (!MovementComp || !MovementComp->IsFalling()) return false;
+	
+	FHitResult Hit;
+	if (!FindWall(Hit)) return false;
+	
+	//stamina check
+	if (UPlayerStats* PlayerStats = this->GetComponentByClass<UPlayerStats>())
+	{
+		float& Stamina = PlayerStats->GetCurrentStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Stamina")));
+		
+		if (Stamina < 50.0f)
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::Printf(TEXT("WJ Not Enough Stamina: %.2f"), Stamina));
+			}
+			return false;
+		}
+	}
+	
+	//subtract stamina
+	GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Stamina.MinorStaminaUsed")), this, nullptr, 0.0f});
+	
+	FVector CurrentVelocity = MovementComp->Velocity;
+	CurrentVelocity.Z = 0.0f;
+	
+	FVector ParallelVel = FVector::VectorPlaneProject(CurrentVelocity, Hit.ImpactNormal);
+	
+	FVector HorizontalVel = ParallelVel + (Hit.ImpactNormal * WallJumpHorizontalForce);
+
+	FVector FinalLaunchVelocity = HorizontalVel;
+	FinalLaunchVelocity.Z = WallJumpVerticalForce;
+	
+	LaunchCharacter(FinalLaunchVelocity, true, true);
+	return true;
+}
+
+bool APlayerCharacter::FindWall(FHitResult& OutHit) const
+{
+	const FVector Start = GetActorLocation();
+	const FVector Forward = GetActorForwardVector();
+	const FVector Right = GetActorRightVector();
+	
+	const TArray<FVector> Directions = {Forward, Right, -Right};
+	
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+	
+	for (const FVector& Direction : Directions)
+	{
+		const FVector End = Start + (Direction * WallCheckDistance);
+		if (GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams))
+		{
+			
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::Printf(TEXT("WJ Hit Det: %.2f"), FMath::Abs(OutHit.ImpactNormal.Z)));
+			}
+			
+			if (FMath::Abs(OutHit.ImpactNormal.Z) < 0.3f)
+			{
+				return true;
+			}
+		}
+	}
+	
+	return false;
+	
 }
 
 
