@@ -37,6 +37,11 @@ void UIceEffect::OnCountChanged(int32 NewCount)
 
 void UIceEffect::OnRemoved(AActor* Owner)
 {
+	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(Owner))
+	{
+		PlayerCharacter->GamePlayEvent.RemoveDynamic(this, &UIceEffect::Slow);
+		PlayerCharacter->GamePlayEvent.RemoveDynamic(this, &UIceEffect::RemoveEnemy);
+	}
 	Super::OnRemoved(Owner);
 }
 

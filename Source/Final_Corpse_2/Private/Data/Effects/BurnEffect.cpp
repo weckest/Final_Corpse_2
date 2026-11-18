@@ -4,6 +4,7 @@
 #include "Data/Effects/BurnEffect.h"
 
 #include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "TimerManager.h"
 #include "Character/PlayerCharacter.h"
 #include "Enemies/BaseEnemy.h"
@@ -44,6 +45,11 @@ void UBurnEffect::OnCountChanged(int32 NewCount)
 
 void UBurnEffect::OnRemoved(AActor* Owner)
 {
+	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(Owner))
+	{
+		PlayerCharacter->GamePlayEvent.RemoveDynamic(this, &UBurnEffect::Burn);
+		PlayerCharacter->GamePlayEvent.RemoveDynamic(this, &UBurnEffect::RemoveEnemy);
+	}
 	Super::OnRemoved(Owner);
 }
 
@@ -57,10 +63,6 @@ void UBurnEffect::Burn(const FGameplayEventData& GamePlayEventData)
 		{
 			if (!EnemyStats->bIsBurning)
 			{
-				if (GEngine)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Applying Burning")));
-				}
 				FTimerHandle& TimerHandle = BurnTimerHandle.FindOrAdd(Enemy);
 				FTimerHandle& IntervalTimerHandle = BurnIntervalTimerHandle.FindOrAdd(Enemy);
 
@@ -68,6 +70,7 @@ void UBurnEffect::Burn(const FGameplayEventData& GamePlayEventData)
 				{
 					Enemy->GetWorldTimerManager().ClearTimer(IntervalTimerHandle);
 					EnemyStats->bIsBurning = false;
+					StopBurningVfx(Enemy);
 					if (GEngine)
 					{
 						GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Burning %d"), EnemyStats->bIsBurning));
@@ -90,7 +93,7 @@ void UBurnEffect::Burn(const FGameplayEventData& GamePlayEventData)
 				
 				if (BurnEffect)
 				{
-					UNiagaraFunctionLibrary::SpawnSystemAttached(
+					if (UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
 						BurnEffect,
 						Enemy->GetRootComponent(),
 						NAME_None,
@@ -98,7 +101,10 @@ void UBurnEffect::Burn(const FGameplayEventData& GamePlayEventData)
 						FRotator::ZeroRotator,
 						EAttachLocation::KeepRelativeOffset,
 						true
-					);
+					))
+					{
+						BurnNiagaraComponents.Add(Enemy, NiagaraComponent);
+					}
 				}
 			}
 		}
@@ -112,6 +118,7 @@ void UBurnEffect::RemoveEnemy(const FGameplayEventData& GamePlayEventData)
 	
 	if (ABaseEnemy* Enemy = Cast<ABaseEnemy>(GamePlayEventData.Target))
 	{
+		StopBurningVfx(Enemy);
 		FTimerHandle* TimerHandle = BurnTimerHandle.Find(Enemy);
 		FTimerHandle* IntervalTimerHandle = BurnIntervalTimerHandle.Find(Enemy);
 		
@@ -131,5 +138,30 @@ void UBurnEffect::RemoveEnemy(const FGameplayEventData& GamePlayEventData)
 				EnemyStats->bIsBurning = false;
 			}
 		}
+	}
+}
+
+void UBurnEffect::StopBurningVfx(ABaseEnemy* Enemy)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Deleting")));
+	}
+	if (TObjectPtr<UNiagaraComponent>* NiagaraComponent = BurnNiagaraComponents.Find(Enemy))
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Deleting Niagara")));
+		}
+		if (IsValid(NiagaraComponent->Get()))
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Fully Deleted")));
+			}
+			NiagaraComponent->Get()->DeactivateImmediate();
+			NiagaraComponent->Get()->DestroyComponent();
+		}
+		BurnNiagaraComponents.Remove(Enemy);
 	}
 }

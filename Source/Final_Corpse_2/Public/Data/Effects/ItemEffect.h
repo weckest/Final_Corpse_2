@@ -23,7 +23,7 @@ public:
 	
 	virtual void OnCountChanged(int32 NewCount);
 	
-	virtual void OnRemoved(AActor* Player) {}
+	virtual void OnRemoved(AActor* Player);
 	
 	virtual void RemoveEnemy(const FGameplayEventData& GamePlayEventData) {}
 	

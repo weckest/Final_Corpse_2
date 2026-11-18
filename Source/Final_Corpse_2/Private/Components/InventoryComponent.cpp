@@ -26,12 +26,30 @@ void UInventoryComponent::BeginPlay()
 	for (auto Item : Items)
 	{
 		for (UItemEffect* Effect: Item.Key.Get()->Effects)
-		{		
+		{	
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Effect: %s, %d"), *Effect->GetName(), Item.Value));
+			}
 			Effect->OnAdded(GetOwner(), Item.Value);
 			Effects.Add(Effect);
 		}
 	}
 	
+}
+
+void UInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	for (UItemEffect* Effect : Effects)
+	{
+		if (Effect)
+		{
+			Effect->OnRemoved(GetOwner());
+		}
+	}
+	Effects.Empty();
+
+	Super::EndPlay(EndPlayReason);
 }
 
 

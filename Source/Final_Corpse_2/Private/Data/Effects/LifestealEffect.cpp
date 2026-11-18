@@ -33,6 +33,10 @@ void ULifestealEffect::OnCountChanged(int32 NewCount)
 
 void ULifestealEffect::OnRemoved(AActor* Player)
 {
+	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(Player))
+	{
+		PlayerCharacter->GamePlayEvent.RemoveDynamic(this, &ULifestealEffect::Lifesteal);
+	}
 	Super::OnRemoved(Player);
 }
 

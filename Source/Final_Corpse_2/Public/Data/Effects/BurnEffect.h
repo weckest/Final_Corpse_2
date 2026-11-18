@@ -8,6 +8,8 @@
 #include "BurnEffect.generated.h"
 
 class UNiagaraSystem;
+class UNiagaraComponent;
+class APlayerCharacter;
 struct FGameplayEventData;
 /**
  * 
@@ -31,19 +33,26 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	TObjectPtr<UNiagaraSystem> BurnEffect;
 	
+	UPROPERTY(Transient)
 	TMap<TObjectPtr<ABaseEnemy>, FTimerHandle> BurnTimerHandle{};
+	
+	UPROPERTY(Transient)
 	TMap<TObjectPtr<ABaseEnemy>, FTimerHandle> BurnIntervalTimerHandle{};
 	
-	void OnAdded(AActor* Owner, int32 Count) override;
-	void OnCountChanged(int32 NewCount) override;
-	void OnRemoved(AActor* Owner) override;
+	UPROPERTY(Transient)
+	TMap<TObjectPtr<ABaseEnemy>, TObjectPtr<UNiagaraComponent>> BurnNiagaraComponents{};
+	
+	virtual void OnAdded(AActor* Owner, int32 Count) override;
+	virtual void OnCountChanged(int32 NewCount) override;
+	virtual void OnRemoved(AActor* Owner) override;
 	
 	UFUNCTION()
-	void RemoveEnemy(const FGameplayEventData& GamePlayEventData) override;
+	virtual void RemoveEnemy(const FGameplayEventData& GamePlayEventData) override;
 	
 protected:
 	UFUNCTION()
 	void Burn(const FGameplayEventData& GamePlayEventData);
+	void StopBurningVfx(ABaseEnemy* Enemy);
 	
 	
 };
