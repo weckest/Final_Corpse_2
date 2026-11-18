@@ -111,6 +111,12 @@ void APlayerCharacter::PrimaryAbility(const FInputActionValue& Value)
 	if (ActivePrimaryAbility)
 	{
 		ActivePrimaryAbility->Ability(this);
+	} else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("NO GUN")));
+		}
 	}
 }
 

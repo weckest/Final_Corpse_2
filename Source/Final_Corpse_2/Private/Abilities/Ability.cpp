@@ -10,6 +10,6 @@ void UAbility::Ability(AActor* AbilityUser)
 {
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("HOW DID YOU GET HERE"));
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, TEXT("HOW DID YOU GET HERE>!?!?!?!?!"));
 	}
 }

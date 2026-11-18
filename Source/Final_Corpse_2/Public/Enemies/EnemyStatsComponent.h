@@ -49,4 +49,7 @@ public:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "EnemyStats")
 	float CurrentHealth = 100.0f;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "EnemyStats")
+	bool bIsBurning = false;
 };

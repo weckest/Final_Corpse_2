@@ -50,16 +50,16 @@ void UPlayerStats::UpdateMaxStatValue(FGameplayTag StatTag, float Amount, EEditT
 	switch (Type)
 	{
 		case EEditType::Add:
-			MaxStat += Amount;
+			MaxStat = FMath::Clamp(MaxStat + Amount,  GetBaseStatValue(StatTag), MaxStat + Amount);
 			break;
 		case EEditType::Multiply:
-			MaxStat *= Amount;
+			MaxStat = FMath::Clamp(MaxStat * Amount,  GetBaseStatValue(StatTag), MaxStat * Amount);
 			break;
 		case EEditType::Divide:
-			MaxStat /= Amount;
+			MaxStat = FMath::Clamp(MaxStat / Amount,  GetBaseStatValue(StatTag), MaxStat / Amount);
 			break;
 		case EEditType::Subtract:
-			MaxStat -= Amount;
+			MaxStat = FMath::Clamp(MaxStat - Amount,  GetBaseStatValue(StatTag), MaxStat - Amount);
 			break;
 	}
 	

@@ -17,19 +17,23 @@ UGun::UGun()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
+UGun::~UGun()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 6.0f, FColor::Red, FString::Printf(TEXT("GUN REMOVED")));
+	}
+}
+
 void UGun::Shoot(AActor* AbilityUser)
 {
 	
 	if (CurrentCooldownTime > 0.0f)
 	{
 		return;
-	} else if (Ammo <= 0)
-	{
-		Reload();
 	} else if (UPlayerStats* PlayerStats = AbilityUser->FindComponentByClass<UPlayerStats>())
 	{
 		if (!bIsReady) return;
-		this->Ammo--;
 		CurrentCooldownTime = CooldownTime;
 		bIsReady = false;
 		
@@ -108,15 +112,6 @@ void UGun::Shoot(AActor* AbilityUser)
 	}
 }
 
-void UGun::Reload()
-{
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, TEXT("Reloading"));
-	}
-	Ammo = MaxAmmo;
-}
-
 void UGun::Ability(AActor* AbilityUser)
 {
 	if (!AbilityUser) return;
@@ -130,10 +125,6 @@ void UGun::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTi
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	CurrentCooldownTime = FMath::Clamp(CurrentCooldownTime -= DeltaTime, 0.0f, CooldownTime);
 	
-	if (Ammo <= 0)
-	{
-		Reload();
-	}
 	
 	if (CurrentCooldownTime <= 0.0f && !bIsReady)
 	{

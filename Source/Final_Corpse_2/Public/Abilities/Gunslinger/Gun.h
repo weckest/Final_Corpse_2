@@ -18,19 +18,13 @@ private:
 public:
 	// Sets default values for this component's properties
 	UGun();
+	~UGun();
 	void Shoot(AActor* AbilityUser);
-	void Reload();
 	
 	virtual void Ability(AActor* AbilityUser) override;
 	
 
 protected:
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
-	int MaxAmmo = 5;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
-	int Ammo = 5;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	float Damage = 10.0f;

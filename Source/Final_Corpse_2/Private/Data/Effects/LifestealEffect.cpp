@@ -20,7 +20,7 @@ void ULifestealEffect::OnAdded(AActor* Player, int32 Count)
 			bIsAdded = true;
 			if (GEngine)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Added Listener for gameplay event")));
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Lifesteal Added")));
 			}
 		}
 	}

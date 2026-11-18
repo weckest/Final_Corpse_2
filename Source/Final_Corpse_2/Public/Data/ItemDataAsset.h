@@ -28,8 +28,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
 	TArray<FStatModifier> StatModifiers;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
-	TArray<TSubclassOf<UItemEffect>> Effects;
+	UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly, Category = "Item")
+	TArray<TObjectPtr<UItemEffect>> Effects;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
 	float Cost = 100.0f;

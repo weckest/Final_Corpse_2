@@ -43,8 +43,8 @@ void UPassiveBackBlast::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void UPassiveBackBlast::BackBlast(const FGameplayEventData& EventData)
 {
-	if (EventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Player.Ability.Primary")) &&
-		EventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Player.Ability.Secondary"))) return;
+	if (EventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Player.Ability.Primary.Used")) &&
+		EventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Player.Ability.Secondary.Used"))) return;
 	
 	if (APlayerCharacter* Player = Cast<APlayerCharacter>(EventData.Actor))
 	{

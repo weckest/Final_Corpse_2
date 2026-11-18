@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Data/Effects/ItemEffect.h"
 #include "InventoryComponent.generated.h"
 
 
@@ -33,6 +34,9 @@ public:
 	
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnInventoryUpdated OnInventoryUpdated;
+	
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	TArray<TObjectPtr<UItemEffect>> Effects;
 	
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	bool AddItem(UItemDataAsset* Item);
