@@ -144,22 +144,10 @@ void UBurnEffect::RemoveEnemy(const FGameplayEventData& GamePlayEventData)
 
 void UBurnEffect::StopBurningVfx(ABaseEnemy* Enemy)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Deleting")));
-	}
 	if (TObjectPtr<UNiagaraComponent>* NiagaraComponent = BurnNiagaraComponents.Find(Enemy))
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Deleting Niagara")));
-		}
 		if (IsValid(NiagaraComponent->Get()))
 		{
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Fully Deleted")));
-			}
 			// Stop spawning new particles, but let the particles already in the
 			// system finish their normal lifetimes before the component is removed.
 			NiagaraComponent->Get()->SetAutoDestroy(true);
