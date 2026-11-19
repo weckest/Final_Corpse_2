@@ -5,10 +5,12 @@
 
 #include "Character/PlayerCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "EdGraph/EdGraphNode.h"
 #include "Enemies/EnemyStatsComponent.h"
 #include "Enemies/AiControllers/BaseAiController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "opensubdiv/far/error.h"
 
 
 // Sets default valu
@@ -69,6 +71,57 @@ void ABaseEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ABaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ABaseEnemy::Attack()
+{
+	if (!CanAttack()) return;
+	
+	LastAttackTime = GetWorld()->GetTimeSeconds();
+	
+	if (AttackMontage)
+	{
+		const float MontageDuration = PlayAnimMontage(AttackMontage);
+		UE_LOG(LogTemp, Warning, TEXT("Montage Duration: %f"), MontageDuration);
+		PlayAnimMontage(AttackMontage);
+	} else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AttackMontage is not set for %s"), *GetName());
+		ApplyAttackHit();
+	}
+}
+
+void ABaseEnemy::ApplyAttackHit()
+{
+	if (bIsDead || !EnemyStats) return;
+	
+	if (!ListenedPlayer)
+	{
+		ListenedPlayer = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(this,0));
+		if (!ListenedPlayer) return;
+	}
+	
+	const FVector ToPlayer = ListenedPlayer->GetActorLocation() - GetActorLocation();
+	const float Reach = EnemyStats->BaseAttackRange + HitRangeTolerance;
+	if (ToPlayer.SizeSquared() > Reach * Reach) return;
+	
+	const float MinDot = FMath::Cos(FMath::DegreesToRadians(HitHalfAngle));
+	if (FVector::DotProduct(GetActorForwardVector().GetSafeNormal2D(), ToPlayer.GetSafeNormal2D()) < MinDot) return;
+	
+	static const FGameplayTag DamageRequestTag = FGameplayTag::RequestGameplayTag(FName("Event.Player.DamageRequest"));
+	ListenedPlayer->GamePlayEvent.Broadcast({
+	DamageRequestTag,
+	this,
+	ListenedPlayer,
+	EnemyStats->BaseAttack});
+}
+
+bool ABaseEnemy::CanAttack() const
+{
+	if (bIsDead || !EnemyStats) return false;
+	
+	const float Cooldown = 1.0f / FMath::Max(EnemyStats->BaseAttackSpeed, 0.01f);
+	return GetWorld()->GetTimeSeconds() - LastAttackTime >= Cooldown;
 }
 
 void ABaseEnemy::HandleGameplayEvent(const FGameplayEventData& EventData)
