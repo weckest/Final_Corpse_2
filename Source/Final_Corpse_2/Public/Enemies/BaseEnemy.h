@@ -8,6 +8,7 @@
 class APlayerCharacter;
 class UEnemyStatsComponent;
 class UBehaviorTree;
+class UAnimMontage;
 
 UCLASS()
 class FINAL_CORPSE_2_API ABaseEnemy : public ACharacter
@@ -21,6 +22,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UEnemyStatsComponent> EnemyStats;
 	
+	UPROPERTY(EditDefaultsOnly, Category="Enemy|Attack")
+	TObjectPtr<UAnimMontage> AttackMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Enemy|Attack", meta = (ClampMin="0"))
+	float HitRangeTolerance = 50.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Enemy|Attack", meta = (ClampMin="0", ClampMax="180"))
+	float HitHalfAngle = 60.0f;
 
 	virtual void Die();
 
@@ -30,7 +39,14 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 	
-	virtual void Attack(){};
+	UFUNCTION(BlueprintCallable, Category= "Enemy|Attack")
+	virtual void Attack();
+	
+	UFUNCTION(BlueprintCallable, Category= "Enemy|Attack")
+	void ApplyAttackHit();
+	
+	UFUNCTION(BlueprintPure, Category= "Enemy|Attack")
+	bool CanAttack() const;
 	
 	UFUNCTION()
 	void HandleGameplayEvent(const FGameplayEventData& EventData);
@@ -49,6 +65,9 @@ public:
 
 	
 private:
+	
+	float LastAttackTime = -1000.0f;
+	
 	UPROPERTY()
 	TObjectPtr<APlayerCharacter> ListenedPlayer;
 	

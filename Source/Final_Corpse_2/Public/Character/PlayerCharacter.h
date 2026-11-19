@@ -31,6 +31,11 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	virtual void Landed(const FHitResult& Hit) override;
+	
+	float LastCrouchPressTime = -1.0f;
+	bool bIsFastFalling = false;
 
 public:
 	// Called every frame
@@ -71,6 +76,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Input Actions")
 	TObjectPtr<UInputAction> AirDashAction;
+	
+	UPROPERTY(EditAnywhere, Category = "Input Actions")
+	TObjectPtr<UInputAction> CrouchAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
 	bool bIsDashing = false;
@@ -117,7 +125,9 @@ public:
 	void StopJump();
 	void Move(const FInputActionValue& Value);
 	
-	virtual void Landed(const FHitResult& Hit) override;
+	void OnCrouchPressed();
+	void OnCrouchReleased();
+	void TriggerFastFall();
 	
 	void PrimaryAbility(const FInputActionValue& Value);
 	void SecondaryAbility(const FInputActionValue& Value);
@@ -138,6 +148,13 @@ public:
 	bool TryWallJump();
 	
 	bool FindWall(FHitResult& OutHit) const;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FastFall")
+	float DoubleTapWindow = 0.25f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FastFall")
+	float FastFallSpeed = 1500.0f;
+	
 	
 	
 };
