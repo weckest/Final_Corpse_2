@@ -19,7 +19,7 @@ class FINAL_CORPSE_2_API UItemDataAsset : public UDataAsset
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FName ItemName;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
@@ -30,6 +30,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly, Category = "Item")
 	TArray<TObjectPtr<UItemEffect>> Effects;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
+	TObjectPtr<UTexture2D> Icon;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
 	float Cost = 100.0f;

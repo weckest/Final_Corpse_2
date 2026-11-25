@@ -14,10 +14,26 @@ class FINAL_CORPSE_2_API ABrutes : public AEliteEnem
 public:
 	// Sets default values for this character's properties
 	ABrutes();
+	
+	virtual void ApplyAttackHit() override;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Enemy|Attack|AoE" , meta = (ClampMin = "0"))
+	float AoeRadius = 350.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Enemy|Attack|AoE")
+	float AoeForwardOffset = 100.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Enemy|Attack|AoE" , meta = (ClampMin = "0"))
+	float AoeMaxHeight = 120.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Enemy|Attack|AoE")
+	bool bDrawDebugAoe = true;
+	
+	
 
 public:
 	// Called every frame
