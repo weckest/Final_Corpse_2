@@ -133,7 +133,7 @@ void ABaseEnemy::HandleGameplayEvent(const FGameplayEventData& EventData)
 	if (bIsDead || !EnemyStats) return;
 	
 	ListenedPlayer->GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Hit")), 
-		EventData.Actor, this, 0.0f});
+		EventData.Actor, this, EventData.Magnitude});
 	
 	// brackets for future damage calculations
 	float damageDealt = (EventData.Magnitude);
