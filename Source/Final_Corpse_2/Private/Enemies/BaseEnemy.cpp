@@ -121,6 +121,7 @@ void ABaseEnemy::Attack()
 	if (!CanAttack()) return;
 	
 	LastAttackTime = GetWorld()->GetTimeSeconds();
+	bHitAppliedThisSwing = false;
 	
 	if (AttackMontage)
 	{
