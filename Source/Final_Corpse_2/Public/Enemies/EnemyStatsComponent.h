@@ -42,6 +42,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnemyStats",
 		meta = (ClampMin = "0.01"))
 	float MaxSize = 1.2f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnemyStats")
+	float Mass = 150.0f;
 
 	// Runtime stats
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "EnemyStats")

@@ -6,6 +6,7 @@
 #include "Components/BillboardComponent.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
+#include "Components/CapsuleComponent.h"
 
 
 namespace
@@ -212,6 +213,8 @@ void AEnemySpawner::SpawnEnemy()
 		// Scatter each member on a flat circle around the spawner so they don't stack.
 		const FVector2D Offset = FMath::RandPointInCircle(GroupSpawnRadius);
 		const FVector Location = Center + FVector(Offset.X, Offset.Y, 0.0f);
+		
+		
 
 		SpawnEnemyAtTransform(Entry->EnemyClass, FTransform(Facing, Location));
 	}
