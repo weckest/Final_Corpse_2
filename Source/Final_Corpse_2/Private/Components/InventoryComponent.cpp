@@ -3,6 +3,7 @@
 
 #include "Components/InventoryComponent.h"
 
+#include "Character/PlayerCharacter.h"
 #include "Data/ItemDataAsset.h"
 #include "Data/Effects/ItemEffect.h"
 #include "Engine/Engine.h"
@@ -64,12 +65,49 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 bool UInventoryComponent::AddItem(UItemDataAsset* Item)
 {
+	if (!IsValid(Item)) {return false;}
 	
 	//JUST TEST CODE: NEED TO ACTUALLY ADD ITEM TO INVENTORY
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan,  Item->GetClass()->GetName());
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan,  Item->ItemName.ToString());
 	}
+	
+	AActor* Owner = GetOwner();
+	
+	if (Items.Contains(Item))
+	{
+		//Item already Exists
+		int32& Count = Items.FindChecked(Item);
+		Count++;
+		
+		//For every Effect, check its effects and increase the count
+		for (UItemEffect* Effect : Item->Effects)
+		{
+			if (IsValid(Effect))
+			{
+				Effect->OnCountChanged(Count);
+			}
+		}
+	} else
+	{
+		//First Time obtaining Item
+		Items.Add(Item, 1);
+		
+		//activate effects:
+		for (UItemEffect* Effect : Item->Effects)
+		{
+			if (IsValid(Effect))
+			{
+				Effect->OnAdded(Owner, 1);
+			}
+		}
+	}
+	
+	
+	
+	
+	
 	return false;
 }
 

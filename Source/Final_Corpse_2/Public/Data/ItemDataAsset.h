@@ -19,7 +19,7 @@ class FINAL_CORPSE_2_API UItemDataAsset : public UDataAsset
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FName ItemName;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
