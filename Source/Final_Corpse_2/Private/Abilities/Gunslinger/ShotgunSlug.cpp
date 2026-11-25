@@ -54,7 +54,7 @@ void UShotgunSlug::Shoot(AActor* AbilityUser)
 		return;
 	} else if (UPlayerStats* PlayerStats = AbilityUser->FindComponentByClass<UPlayerStats>())
 	{
-		CurrentCooldownTime = CooldownTime;
+		CurrentCooldownTime = CooldownTime * PlayerStats->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Cooldown")));
 		
 		if (APlayerCharacter* Player = Cast<APlayerCharacter>(AbilityUser))
 		{

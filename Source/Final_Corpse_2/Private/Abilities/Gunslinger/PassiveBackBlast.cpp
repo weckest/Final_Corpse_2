@@ -28,6 +28,7 @@ void UPassiveBackBlast::BeginPlay()
 	APlayerCharacter* Player = Cast<APlayerCharacter>(GetOwner());
 	
 	Player->GamePlayEvent.AddDynamic(this, &UPassiveBackBlast::BackBlast);
+	Player->GamePlayEvent.AddDynamic(this, &UPassiveBackBlast::ResetBackBlast);
 	
 }
 
@@ -59,7 +60,9 @@ void UPassiveBackBlast::BackBlast(const FGameplayEventData& EventData)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Blasting Bros Back Before: %f"), Forward.Dot(Player->GetActorRightVector())));
 			}
-			Forward *= -Force * Player->GetComponentByClass<UPlayerStats>()->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Damage")));
+			Forward *= -CurrentForce * Player->GetComponentByClass<UPlayerStats>()->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Damage")));
+			
+			CurrentForce *= 0.75f;
 			
 			if (GEngine)
 			{
@@ -69,4 +72,11 @@ void UPassiveBackBlast::BackBlast(const FGameplayEventData& EventData)
 			Player->LaunchCharacter(Forward, true, true);
 		}
 	}
+}
+
+void UPassiveBackBlast::ResetBackBlast(const FGameplayEventData& EventData)
+{
+	if (EventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Player.Landed"))) return;
+	
+	CurrentForce = Force;
 }

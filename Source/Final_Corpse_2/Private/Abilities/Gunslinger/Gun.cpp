@@ -39,7 +39,7 @@ void UGun::Shoot(AActor* AbilityUser)
 	} else if (UPlayerStats* PlayerStats = AbilityUser->FindComponentByClass<UPlayerStats>())
 	{
 		if (!bIsReady) return;
-		CurrentCooldownTime = CooldownTime;
+		CurrentCooldownTime = CooldownTime * PlayerStats->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Cooldown")));
 		bIsReady = false;
 		
 		if (APlayerCharacter* Player = Cast<APlayerCharacter>(AbilityUser))

@@ -30,6 +30,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ability")
 	float Force = 750.0f;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ability")
+	float CurrentForce = Force;
+	
 	UFUNCTION()
 	void BackBlast(const FGameplayEventData& EventData);
+	
+	UFUNCTION()
+	void ResetBackBlast(const FGameplayEventData& EventData);
+	
+	
 };
