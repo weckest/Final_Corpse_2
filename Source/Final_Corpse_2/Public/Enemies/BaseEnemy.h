@@ -17,8 +17,24 @@ class FINAL_CORPSE_2_API ABaseEnemy : public ACharacter
 
 public:
 	ABaseEnemy();
+	
+	UFUNCTION(BlueprintPure, Category="Enemy|Spawn")
+	bool isSpawning() const { return bIsSpawning; };
 
 protected:
+	// spawn stuff
+	UPROPERTY(EditDefaultsOnly, Category="Enemy|Spawn")
+	TObjectPtr<UAnimMontage> SpawnMontage;
+	
+	UFUNCTION()
+	void OnSpawnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	
+	void EndSpawnAnimation();
+	
+	UPROPERTY(EditDefaultsOnly, Category="Enemy|Spawn")
+	float SpawnAnimheightOffset = 0.0f;
+	
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UEnemyStatsComponent> EnemyStats;
 	
@@ -65,6 +81,10 @@ public:
 
 	
 private:
+	
+	FVector DefaultMeshLocation;
+	
+	bool bIsSpawning = false;
 	
 	float LastAttackTime = -1000.0f;
 	
