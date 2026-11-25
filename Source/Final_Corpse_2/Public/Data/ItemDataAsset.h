@@ -13,7 +13,7 @@ class UTexture2D;
 
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class FINAL_CORPSE_2_API UItemDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
