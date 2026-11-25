@@ -40,7 +40,7 @@ void UChainLightningEffect::OnRemoved(AActor* Owner)
 
 void UChainLightningEffect::Chain(const FGameplayEventData& EventData)
 {
-	if (EventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Hit")) && EventData.Actor.GetClass() != this->GetClass()) return;
+	if (EventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Hit")) && EventData.Actor.GetClass() != Owner.GetClass()) return;
 	
 	
 	

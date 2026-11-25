@@ -10,6 +10,8 @@
 #include "Enemies/AiControllers/BaseAiController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
 #include "opensubdiv/far/error.h"
 
 
@@ -37,6 +39,22 @@ ABaseEnemy::ABaseEnemy()
 	Move->RotationRate = FRotator(0.f, 540.f, 0.f);
 }
 
+void ABaseEnemy::OnSpawnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	EndSpawnAnimation();
+}
+
+void ABaseEnemy::EndSpawnAnimation()
+{
+	bIsSpawning = false;
+	
+	if (SpawnAnimheightOffset != 0.f)
+	{
+		GetMesh()->SetRelativeLocation(DefaultMeshLocation);
+	}
+	GetCharacterMovement()->SetDefaultMovementMode();
+}
+
 // Called when the game starts or when spawned
 void ABaseEnemy::BeginPlay()
 {
@@ -46,12 +64,37 @@ void ABaseEnemy::BeginPlay()
 	{
 		EnemyStats->MaxHealth = EnemyStats->BaseMaxHealth;
 		EnemyStats->CurrentHealth = EnemyStats->MaxHealth;
+		
+		GetCharacterMovement()->MaxWalkSpeed = EnemyStats->BaseMoveSpeed;
 	}
 	
 	ListenedPlayer = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(this,0));
 	if (ListenedPlayer)
 	{
 		ListenedPlayer->GamePlayEvent.AddDynamic(this, &ABaseEnemy::HandleGameplayEvent);
+	}
+	
+	if (SpawnMontage)
+	{
+		bIsSpawning = true;
+		GetCharacterMovement()->DisableMovement();
+		
+		DefaultMeshLocation = GetMesh()->GetRelativeLocation();
+		GetMesh()->SetRelativeLocation(DefaultMeshLocation + FVector(0.f,0.f,SpawnAnimheightOffset));
+		
+		const float Length = PlayAnimMontage(SpawnMontage);
+		UAnimInstance* Anim = GetMesh()->GetAnimInstance();
+		
+		if (Length >0.0f && Anim)
+		{
+			FOnMontageEnded EndDelegate;
+			EndDelegate.BindUObject(this, &ABaseEnemy::OnSpawnMontageEnded);
+			Anim->Montage_SetEndDelegate(EndDelegate, SpawnMontage);
+		}
+		else
+		{
+			EndSpawnAnimation();
+		}
 	}
 
 }
@@ -84,7 +127,7 @@ void ABaseEnemy::Attack()
 		const float MontageDuration = PlayAnimMontage(AttackMontage);
 		UE_LOG(LogTemp, Warning, TEXT("Montage Duration: %f"), MontageDuration);
 		PlayAnimMontage(AttackMontage);
-		ApplyAttackHit();
+		
 	} else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AttackMontage is not set for %s"), *GetName());
@@ -119,7 +162,7 @@ void ABaseEnemy::ApplyAttackHit()
 
 bool ABaseEnemy::CanAttack() const
 {
-	if (bIsDead || !EnemyStats) return false;
+	if (bIsDead || !EnemyStats || bIsSpawning) return false;
 	
 	const float Cooldown = 1.0f / FMath::Max(EnemyStats->BaseAttackSpeed, 0.01f);
 	return GetWorld()->GetTimeSeconds() - LastAttackTime >= Cooldown;
