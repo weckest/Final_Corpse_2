@@ -48,6 +48,10 @@ protected:
 	float HitHalfAngle = 60.0f;
 
 	virtual void Die();
+	
+	APlayerCharacter* GetTargetPlayer();
+	
+	bool SendPlayerDamage(float Damage);
 
 public:
 	virtual void BeginPlay() override;
@@ -59,7 +63,7 @@ public:
 	virtual void Attack();
 	
 	UFUNCTION(BlueprintCallable, Category= "Enemy|Attack")
-	void ApplyAttackHit();
+	virtual void ApplyAttackHit();
 	
 	UFUNCTION(BlueprintPure, Category= "Enemy|Attack")
 	bool CanAttack() const;
@@ -95,4 +99,6 @@ private:
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 	
 	bool bIsDead = false;
+	
+	bool bHitAppliedThisSwing = false;
 };

@@ -139,25 +139,18 @@ void ABaseEnemy::ApplyAttackHit()
 {
 	if (bIsDead || !EnemyStats) return;
 	
-	if (!ListenedPlayer)
-	{
-		ListenedPlayer = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(this,0));
-		if (!ListenedPlayer) return;
-	}
+	APlayerCharacter* Player = GetTargetPlayer();
+	if (!Player)return;
 	
-	const FVector ToPlayer = ListenedPlayer->GetActorLocation() - GetActorLocation();
+	// reach in reach and in front
+	const FVector ToPlayer = Player->GetActorLocation() - GetActorLocation();
 	const float Reach = EnemyStats->BaseAttackRange + HitRangeTolerance;
 	if (ToPlayer.SizeSquared() > Reach * Reach) return;
 	
 	const float MinDot = FMath::Cos(FMath::DegreesToRadians(HitHalfAngle));
-	if (FVector::DotProduct(GetActorForwardVector().GetSafeNormal2D(), ToPlayer.GetSafeNormal2D()) < MinDot) return;
+	if (FVector::DotProduct(GetActorForwardVector().GetSafeNormal2D(), ToPlayer.GetSafeNormal2D())< MinDot)return;
 	
-	static const FGameplayTag DamageRequestTag = FGameplayTag::RequestGameplayTag(FName("Event.Player.DamageRequest"));
-	ListenedPlayer->GamePlayEvent.Broadcast({
-	DamageRequestTag,
-	this,
-	ListenedPlayer,
-	EnemyStats->BaseAttack});
+	SendPlayerDamage(EnemyStats->BaseAttack);
 }
 
 bool ABaseEnemy::CanAttack() const
@@ -209,5 +202,28 @@ void ABaseEnemy::Die()
 	}
 	
 	Destroy();
+}
+
+APlayerCharacter* ABaseEnemy::GetTargetPlayer()
+{
+	if (!ListenedPlayer)
+	{
+		ListenedPlayer = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(this,0));
+	}
+	return ListenedPlayer;
+}
+
+bool ABaseEnemy::SendPlayerDamage(float Damage)
+{
+	APlayerCharacter* Player = GetTargetPlayer();
+	if (!Player || bHitAppliedThisSwing) return false;
+	
+	bHitAppliedThisSwing = true;
+	
+	static const FGameplayTag DamageRequestTag = FGameplayTag::RequestGameplayTag(FName("Event.Player.DamageRequest"));
+	Player->GamePlayEvent.Broadcast({DamageRequestTag,
+	this,Player,
+	Damage});
+	return true;
 }
 
