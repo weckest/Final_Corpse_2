@@ -8,6 +8,7 @@
 #include "Data/GameplayEventData.h"
 #include "PlayerCharacter.generated.h"
 
+class UGameOverWidget;
 class UPlayerStats;
 struct FInputActionValue;
 class UInputAction;
@@ -36,6 +37,9 @@ protected:
 	
 	float LastCrouchPressTime = -1.0f;
 	bool bIsFastFalling = false;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UGameOverWidget> GameOverWidgetClass;
 
 public:
 	// Called every frame
@@ -158,6 +162,11 @@ public:
 	UFUNCTION()
 	void Hit(const FGameplayEventData& EventData);
 	
+	bool bIsDead = false;
 	
+	FTimerHandle DeathTimerHandle;
+	
+	UFUNCTION(BlueprintCallable)
+	void ShowGameOverUI();
 	
 };

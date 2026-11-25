@@ -6,12 +6,14 @@
 #include "EnhancedInputComponent.h"
 #include "TimerManager.h"
 #include "Abilities/PlayerStats.h"
+#include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Components/StaminaComponent.h"
 #include "Engine/Engine.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Math/UnitConversion.h"
+#include "UI/GameOverWidget.h"
 
 
 // Sets default values
@@ -401,13 +403,54 @@ void APlayerCharacter::Hit(const FGameplayEventData& EventData)
 		
 		GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Hit")), EventData.Actor, this, EventData.Magnitude});
 		
-		if (Health <= 0.0f)
+		if (!bIsDead && Health <= 0.0f)
 		{
-			//Trigger Death Event
+			if (APlayerController* PC = Cast<APlayerController>(GetController()))
+			{
+				bIsDead = true;
+				DisableInput(PC);
+				GetCharacterMovement()->StopMovementImmediately();
+				
+				GetWorldTimerManager().SetTimer(
+						DeathTimerHandle,
+						this,
+						&APlayerCharacter::ShowGameOverUI,
+						2.0f,
+						false
+					);
+			}
 		}
 	}
 }
 
+void APlayerCharacter::ShowGameOverUI()
+{
+	
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::Printf(TEXT("Inside GOUI")));
+	}
+	
+	if (!bIsDead)
+	{
+		return;
+	}
+	
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		if (UGameOverWidget* GameOverWidget = CreateWidget<UGameOverWidget>(PC, GameOverWidgetClass))
+		{
+			GameOverWidget->AddToViewport();
+		
+			FInputModeUIOnly InputMode;
+			InputMode.SetWidgetToFocus(GameOverWidget->TakeWidget());
+			PC->SetInputMode(InputMode);
+			PC->bShowMouseCursor = true;
+		}
+	}
+	
+	
+}
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
@@ -453,4 +496,3 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-

@@ -55,4 +55,7 @@ public:
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "EnemyStats")
 	bool bIsBurning = false;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnemyStats")
+	int BaseScore = 100;
 };
