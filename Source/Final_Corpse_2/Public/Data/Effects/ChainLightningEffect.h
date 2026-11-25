@@ -19,6 +19,12 @@ public:
 	virtual void OnCountChanged(int32 NewCount) override;
 	virtual void OnRemoved(AActor* Owner) override;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
+	float Range = 1000.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
+	float ChainDamagePercentage = 0.3f;
+	
 protected:
 	UFUNCTION()
 	void Chain(const FGameplayEventData& EventData);
