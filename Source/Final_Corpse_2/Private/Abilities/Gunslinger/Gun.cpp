@@ -5,7 +5,9 @@
 
 #include "DrawDebugHelpers.h"
 #include "Abilities/PlayerStats.h"
+#include "Animation/AnimInstance.h"
 #include "Character/PlayerCharacter.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Enemies/BaseEnemy.h"
 #include "Enemies/EnemyStatsComponent.h"
 #include "Engine/Engine.h"
@@ -27,8 +29,11 @@ UGun::~UGun()
 
 void UGun::Shoot(AActor* AbilityUser)
 {
-	
-	if (CurrentCooldownTime > 0.0f)
+	if (Cast<APlayerCharacter>(AbilityUser)->GetMesh()->GetAnimInstance()->Montage_IsPlaying(nullptr))
+	{
+		return;
+	}
+	else if (CurrentCooldownTime > 0.0f)
 	{
 		return;
 	} else if (UPlayerStats* PlayerStats = AbilityUser->FindComponentByClass<UPlayerStats>())
