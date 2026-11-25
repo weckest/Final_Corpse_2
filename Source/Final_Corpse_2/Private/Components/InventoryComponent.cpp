@@ -64,6 +64,12 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 bool UInventoryComponent::AddItem(UItemDataAsset* Item)
 {
+	
+	//JUST TEST CODE: NEED TO ACTUALLY ADD ITEM TO INVENTORY
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan,  Item->GetClass()->GetName());
+	}
 	return false;
 }
 
