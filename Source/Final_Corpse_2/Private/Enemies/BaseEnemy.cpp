@@ -84,6 +84,7 @@ void ABaseEnemy::Attack()
 		const float MontageDuration = PlayAnimMontage(AttackMontage);
 		UE_LOG(LogTemp, Warning, TEXT("Montage Duration: %f"), MontageDuration);
 		PlayAnimMontage(AttackMontage);
+		ApplyAttackHit();
 	} else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AttackMontage is not set for %s"), *GetName());
