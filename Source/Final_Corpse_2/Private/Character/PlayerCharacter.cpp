@@ -384,6 +384,30 @@ bool APlayerCharacter::FindWall(FHitResult& OutHit) const
 	
 }
 
+void APlayerCharacter::Hit(const FGameplayEventData& EventData)
+{
+	if (EventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Player.DamageRequest"))) return;
+	
+	if (UPlayerStats* PlayerStats = GetComponentByClass<UPlayerStats>())
+	{
+		float& Health = PlayerStats->GetCurrentStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Health")));
+		const float& MaxHealth = PlayerStats->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Health")));
+		Health = FMath::Clamp(Health - EventData.Magnitude, 0.0f, MaxHealth);
+		
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::Printf(TEXT("%.2f"), Health));
+		}
+		
+		GamePlayEvent.Broadcast({FGameplayTag::RequestGameplayTag(FName("Event.Player.Hit")), EventData.Actor, this, EventData.Magnitude});
+		
+		if (Health <= 0.0f)
+		{
+			//Trigger Death Event
+		}
+	}
+}
+
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
@@ -414,6 +438,8 @@ void APlayerCharacter::BeginPlay()
 			ActivePassiveAbility.Add(PassiveComponent);
 		}
 	}
+	
+	GamePlayEvent.AddDynamic(this, &APlayerCharacter::Hit);
 	
 }
 

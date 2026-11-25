@@ -155,6 +155,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FastFall")
 	float FastFallSpeed = 1500.0f;
 	
+	UFUNCTION()
+	void Hit(const FGameplayEventData& EventData);
+	
 	
 	
 };
