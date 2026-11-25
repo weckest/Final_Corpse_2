@@ -7,6 +7,7 @@
 #include "UObject/Object.h"
 #include "ItemEffect.generated.h"
 
+class ABaseEnemy;
 struct FGameplayEventData;
 class AActor;
 /**
@@ -35,5 +36,8 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
 	int EffectCount = 0;
+	
+protected:
+	bool GetEnemiesInRange(FTransform TargetTransform, float Range, TArray<ABaseEnemy*>& EnemiesInRange);
 	
 };

@@ -43,7 +43,7 @@ void UKnockbackEffect::OnRemoved(AActor* Owner)
 
 void UKnockbackEffect::Knockback(const FGameplayEventData& GamePlayEventData)
 {
-	if (GamePlayEventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Damaged"))) return;
+	if (GamePlayEventData.EventTag != FGameplayTag::RequestGameplayTag(FName("Event.Enemy.Hit")) && GamePlayEventData.Actor.Get() != Owner) return;
 	
 	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GamePlayEventData.Actor))
 	{

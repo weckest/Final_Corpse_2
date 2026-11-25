@@ -27,6 +27,7 @@ void UInventoryComponent::BeginPlay()
 	{
 		for (UItemEffect* Effect: Item.Key.Get()->Effects)
 		{	
+			if (!Effect) continue;
 			if (GEngine)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Effect: %s, %d"), *Effect->GetName(), Item.Value));
