@@ -32,6 +32,9 @@ public:
 	TArray<TObjectPtr<UItemEffect>> Effects;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
+	TObjectPtr<UTexture2D> Icon;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
 	float Cost = 100.0f;
 };
 

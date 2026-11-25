@@ -107,8 +107,8 @@ bool UInventoryComponent::AddItem(UItemDataAsset* Item)
 	
 	
 	
-	
-	return false;
+	OnInventoryUpdated.Broadcast();
+	return true;
 }
 
 int32 UInventoryComponent::GetQuantity(UItemDataAsset* TargetItem) const

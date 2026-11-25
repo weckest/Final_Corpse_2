@@ -6,6 +6,10 @@
 #include "Blueprint/UserWidget.h"
 #include "MainHUD.generated.h"
 
+class UHorizontalBox;
+class UItemSlotWidget;
+class UTextBlock;
+class UProgressBar;
 struct FGameplayEventData;
 class UPlayerStats;
 class UInventoryComponent;
@@ -20,6 +24,18 @@ class FINAL_CORPSE_2_API UMainHUD : public UUserWidget
 protected:
 	
 	virtual void NativeConstruct() override;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> HealthBar;
+	
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<UTextBlock> HealthText;
+	
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<UHorizontalBox> Itembar;
+	
+	UPROPERTY(EditDefaultsOnly, Category="HUD")
+	TSubclassOf<UItemSlotWidget> ItemSlotClass;
 	
 private:
 	UPROPERTY()
@@ -36,4 +52,12 @@ private:
 	
 	UFUNCTION()
 	void UpdateSecondaryAbility(const FGameplayEventData& GameplayEventData);
+	
+	UFUNCTION()
+	void HandleHealthEvent(const FGameplayEventData& GameplayEventData);
+	
+	void RefreshHealth();
+	
+	UFUNCTION()
+	void RefreshItemBar();
 };
