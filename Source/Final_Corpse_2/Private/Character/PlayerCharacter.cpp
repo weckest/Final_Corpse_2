@@ -439,6 +439,11 @@ void APlayerCharacter::BeginPlay()
 		}
 	}
 	
+	if (UPlayerStats* PlayerStats = GetComponentByClass<UPlayerStats>())
+	{
+		PlayerStats->GetCurrentStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Health"))) = PlayerStats->GetMaxStatValue(FGameplayTag::RequestGameplayTag(FName("Stats.Health")));
+	}
+	
 	GamePlayEvent.AddDynamic(this, &APlayerCharacter::Hit);
 	
 }
